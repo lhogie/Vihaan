@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Grades')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${grade.id} == null ? 'Nouveau grade' : 'Modifier le grade'"></h1>
+    <form th:action="@{/grades}" th:object="${grade}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Code</label>
+            <input class="form-control" th:field="*{code}" placeholder="ex: IE, IR, DR, MCF...">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Libellé</label>
+            <input class="form-control" th:field="*{libelle}">
+        </div>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/grades}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

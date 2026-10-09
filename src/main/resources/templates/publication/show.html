@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Publications')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${publication.titre}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Année</dt><dd class="col-sm-9" th:text="${publication.annee}"></dd>
+        <dt class="col-sm-3">HAL</dt><dd class="col-sm-9" th:text="${publication.idHal}"></dd>
+    </dl>
+
+    <h5>Auteurs</h5>
+    <ul>
+        <li th:each="a : ${publication.auteurs}">
+            <a th:href="@{'/personnes/' + ${a.id}}" th:text="${a}"></a>
+        </li>
+    </ul>
+
+    <a class="btn btn-secondary" th:href="@{'/publications/' + ${publication.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/publications}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

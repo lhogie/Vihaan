@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Adresses')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${adresse.id} == null ? 'Nouvelle adresse' : 'Modifier l\'adresse'"></h1>
+    <form th:action="@{/adresses}" th:object="${adresse}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Rue</label>
+            <input class="form-control" th:field="*{rue}">
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Ville</label>
+                <input class="form-control" th:field="*{ville}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Code postal</label>
+                <input class="form-control" th:field="*{codePostal}">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Pays</label>
+            <select class="form-select" name="paysId">
+                <option value="">-- aucun --</option>
+                <option th:each="p : ${paysList}" th:value="${p.id}"
+                        th:selected="${adresse.pays} != null and ${adresse.pays.id} == ${p.id}"
+                        th:text="${p.nom}"></option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Latitude (GPS)</label>
+                <input class="form-control" type="number" step="any" th:field="*{latitude}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Longitude (GPS)</label>
+                <input class="form-control" type="number" step="any" th:field="*{longitude}">
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/adresses}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

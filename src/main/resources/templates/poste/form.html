@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Postes')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${poste.id} == null ? 'Nouveau poste' : 'Modifier le poste'"></h1>
+    <form th:action="@{/postes}" th:object="${poste}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Personne</label>
+            <select class="form-select" name="personneId" required>
+                <option value="">-- choisir --</option>
+                <option th:each="p : ${personneList}" th:value="${p.id}"
+                        th:selected="${poste.personne} != null and ${poste.personne.id} == ${p.id}"
+                        th:text="${p}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Employeur</label>
+            <select class="form-select" name="employeurId">
+                <option value="">-- aucun --</option>
+                <option th:each="e : ${employeurList}" th:value="${e.id}"
+                        th:selected="${poste.employeur} != null and ${poste.employeur.id} == ${e.id}"
+                        th:text="${e.nom}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Grade</label>
+            <select class="form-select" name="gradeId">
+                <option value="">-- aucun --</option>
+                <option th:each="g : ${gradeList}" th:value="${g.id}"
+                        th:selected="${poste.grade} != null and ${poste.grade.id} == ${g.id}"
+                        th:text="${g.code} + ' - ' + ${g.libelle}"></option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Date de début</label>
+                <input class="form-control" type="date" th:field="*{dateDebut}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Date de fin</label>
+                <input class="form-control" type="date" th:field="*{dateFin}">
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/postes}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

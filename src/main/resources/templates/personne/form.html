@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Personnes')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${personne.id} == null ? 'Nouvelle personne' : 'Modifier la personne'"></h1>
+    <form th:action="@{/personnes}" th:object="${personne}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <h5>Identité</h5>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Nom</label>
+                <input class="form-control" th:field="*{nom}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Prénom</label>
+                <input class="form-control" th:field="*{prenom}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Prénom d'usage</label>
+                <input class="form-control" th:field="*{prenomUsage}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Nom de jeune fille</label>
+                <input class="form-control" th:field="*{nomJeuneFille}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Genre</label>
+                <select class="form-select" th:field="*{genre}">
+                    <option value="">-- non précisé --</option>
+                    <option th:each="g : ${T(fr.lab.hr.model.Genre).values()}" th:value="${g}" th:text="${g}"></option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Numéro de badge</label>
+                <input class="form-control" th:field="*{numeroBadge}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Ville de naissance</label>
+                <input class="form-control" th:field="*{villeNaissance}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Date de naissance</label>
+                <input class="form-control" type="date" th:field="*{dateNaissance}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Date de doctorat</label>
+                <input class="form-control" type="date" th:field="*{dateDoctorat}">
+            </div>
+        </div>
+
+        <h5>Statut</h5>
+        <div class="row">
+            <div class="col-md-3 form-check mt-4">
+                <input class="form-check-input" type="checkbox" th:field="*{estHDR}">
+                <label class="form-check-label">HDR</label>
+            </div>
+            <div class="col-md-3 form-check mt-4">
+                <input class="form-check-input" type="checkbox" th:field="*{estAssocie}">
+                <label class="form-check-label">Associé</label>
+            </div>
+            <div class="col-md-3 form-check mt-4">
+                <input class="form-check-input" type="checkbox" th:field="*{estCollaborateur}">
+                <label class="form-check-label">Collaborateur</label>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Quotité de travail (%)</label>
+                <input class="form-control" type="number" min="0" max="100" th:field="*{quotiteTravail}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Section CNRS</label>
+                <input class="form-control" th:field="*{sectionCNRS}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">ORCID</label>
+                <input class="form-control" th:field="*{orcid}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Identifiant HAL (authId)</label>
+                <input class="form-control" th:field="*{idHal}">
+            </div>
+        </div>
+
+        <h5>Coordonnées</h5>
+        <div class="mb-3">
+            <label class="form-label">Adresse postale</label>
+            <select class="form-select" name="adresseId">
+                <option value="">-- aucune --</option>
+                <option th:each="a : ${adresseList}" th:value="${a.id}"
+                        th:selected="${personne.adressePostale} != null and ${personne.adressePostale.id} == ${a.id}"
+                        th:text="${a}"></option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Téléphones (un par ligne)</label>
+                <textarea class="form-control" name="telephonesTexte" rows="3" th:text="${telephonesTexte}"></textarea>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Emails (un par ligne)</label>
+                <textarea class="form-control" name="emailsTexte" rows="3" th:text="${emailsTexte}"></textarea>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Pages web (une par ligne)</label>
+                <textarea class="form-control" name="pagesWebTexte" rows="3" th:text="${pagesWebTexte}"></textarea>
+            </div>
+        </div>
+
+        <h5>Locaux et structures</h5>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Bureau principal</label>
+                <select class="form-select" name="bureauPrincipalId">
+                    <option value="">-- aucun --</option>
+                    <option th:each="b : ${bureauList}" th:value="${b.id}"
+                            th:selected="${personne.bureauPrincipal} != null and ${personne.bureauPrincipal.id} == ${b.id}"
+                            th:text="${b.nom}"></option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Bureaux secondaires</label>
+                <select class="form-select" name="bureauxSecondairesIds" multiple size="4">
+                    <option th:each="b : ${bureauList}" th:value="${b.id}"
+                            th:selected="${personne.bureauxSecondaires.contains(b)}" th:text="${b.nom}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Structure principale</label>
+                <select class="form-select" name="structureId">
+                    <option value="">-- aucune --</option>
+                    <option th:each="s : ${structureList}" th:value="${s.id}"
+                            th:selected="${personne.structure} != null and ${personne.structure.id} == ${s.id}"
+                            th:text="${s.nom}"></option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Autres structures impliquées</label>
+                <select class="form-select" name="structuresImpliqueesIds" multiple size="4">
+                    <option th:each="s : ${structureList}" th:value="${s.id}"
+                            th:selected="${personne.structuresImpliquees.contains(s)}" th:text="${s.nom}"></option>
+                </select>
+            </div>
+        </div>
+
+        <h5>Publications</h5>
+        <div class="mb-3">
+            <select class="form-select" name="publicationsIds" multiple size="5">
+                <option th:each="p : ${publicationList}" th:value="${p.id}"
+                        th:selected="${personne.publications.contains(p)}" th:text="${p.titre}"></option>
+            </select>
+        </div>
+
+        <p class="text-muted">Les postes et les contrats se gèrent depuis leurs propres pages.</p>
+
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/personnes}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

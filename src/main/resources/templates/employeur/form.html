@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Employeurs')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${employeur.id} == null ? 'Nouvel employeur' : 'Modifier l\'employeur'"></h1>
+    <form th:action="@{/employeurs}" th:object="${employeur}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input class="form-control" th:field="*{nom}">
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" th:field="*{estPublic}">
+            <label class="form-check-label">Employeur public</label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Grades proposés</label>
+            <select class="form-select" name="gradesIds" multiple size="7">
+                <option th:each="g : ${gradeList}" th:value="${g.id}"
+                        th:selected="${employeur.grades.contains(g)}"
+                        th:text="${g.code} + ' - ' + ${g.libelle}"></option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/employeurs}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

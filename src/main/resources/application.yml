@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: hr
+  datasource:
+    url: jdbc:mariadb://localhost:3306/hr
+    username: hr
+    password: hr
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: false
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8080

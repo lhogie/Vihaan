@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Postes')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${poste}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Personne</dt>
+        <dd class="col-sm-9"><a th:if="${poste.personne} != null" th:href="@{'/personnes/' + ${poste.personne.id}}" th:text="${poste.personne}"></a></dd>
+        <dt class="col-sm-3">Employeur</dt>
+        <dd class="col-sm-9"><a th:if="${poste.employeur} != null" th:href="@{'/employeurs/' + ${poste.employeur.id}}" th:text="${poste.employeur.nom}"></a></dd>
+        <dt class="col-sm-3">Grade</dt>
+        <dd class="col-sm-9"><a th:if="${poste.grade} != null" th:href="@{'/grades/' + ${poste.grade.id}}" th:text="${poste.grade.code}"></a></dd>
+        <dt class="col-sm-3">Début</dt><dd class="col-sm-9" th:text="${poste.dateDebut}"></dd>
+        <dt class="col-sm-3">Fin</dt><dd class="col-sm-9" th:text="${poste.dateFin}"></dd>
+    </dl>
+    <a class="btn btn-secondary" th:href="@{'/postes/' + ${poste.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/postes}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

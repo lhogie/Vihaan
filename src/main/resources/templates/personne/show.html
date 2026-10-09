@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Personnes')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${personne}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Nom</dt><dd class="col-sm-9" th:text="${personne.nom}"></dd>
+        <dt class="col-sm-3">Prénom</dt><dd class="col-sm-9" th:text="${personne.prenom}"></dd>
+        <dt class="col-sm-3">Prénom d'usage</dt><dd class="col-sm-9" th:text="${personne.prenomUsage}"></dd>
+        <dt class="col-sm-3">Nom de jeune fille</dt><dd class="col-sm-9" th:text="${personne.nomJeuneFille}"></dd>
+        <dt class="col-sm-3">Genre</dt><dd class="col-sm-9" th:text="${personne.genre}"></dd>
+        <dt class="col-sm-3">Badge</dt><dd class="col-sm-9" th:text="${personne.numeroBadge}"></dd>
+        <dt class="col-sm-3">Ville de naissance</dt><dd class="col-sm-9" th:text="${personne.villeNaissance}"></dd>
+        <dt class="col-sm-3">Date de naissance</dt><dd class="col-sm-9" th:text="${personne.dateNaissance}"></dd>
+        <dt class="col-sm-3">Date de doctorat</dt><dd class="col-sm-9" th:text="${personne.dateDoctorat}"></dd>
+        <dt class="col-sm-3">HDR</dt><dd class="col-sm-9" th:text="${personne.estHDR} ? 'Oui' : 'Non'"></dd>
+        <dt class="col-sm-3">Associé</dt><dd class="col-sm-9" th:text="${personne.estAssocie} ? 'Oui' : 'Non'"></dd>
+        <dt class="col-sm-3">Collaborateur</dt><dd class="col-sm-9" th:text="${personne.estCollaborateur} ? 'Oui' : 'Non'"></dd>
+        <dt class="col-sm-3">Quotité de travail</dt><dd class="col-sm-9" th:text="${personne.quotiteTravail} + ' %'"></dd>
+        <dt class="col-sm-3">Section CNRS</dt><dd class="col-sm-9" th:text="${personne.sectionCNRS}"></dd>
+        <dt class="col-sm-3">ORCID</dt><dd class="col-sm-9" th:text="${personne.orcid}"></dd>
+        <dt class="col-sm-3">Identifiant HAL</dt><dd class="col-sm-9" th:text="${personne.idHal}"></dd>
+        <dt class="col-sm-3">Adresse postale</dt>
+        <dd class="col-sm-9"><a th:if="${personne.adressePostale} != null" th:href="@{'/adresses/' + ${personne.adressePostale.id}}" th:text="${personne.adressePostale}"></a></dd>
+    </dl>
+
+    <h5>Téléphones</h5>
+    <ul><li th:each="t : ${personne.telephones}" th:text="${t}"></li></ul>
+    <h5>Emails</h5>
+    <ul><li th:each="e : ${personne.emails}" th:text="${e}"></li></ul>
+    <h5>Pages web</h5>
+    <ul><li th:each="w : ${personne.pagesWeb}"><a th:href="${w}" th:text="${w}" target="_blank"></a></li></ul>
+
+    <h5>Bureau principal</h5>
+    <p><a th:if="${personne.bureauPrincipal} != null" th:href="@{'/bureaux/' + ${personne.bureauPrincipal.id}}" th:text="${personne.bureauPrincipal.nom}"></a></p>
+    <h5>Bureaux secondaires</h5>
+    <ul><li th:each="b : ${personne.bureauxSecondaires}"><a th:href="@{'/bureaux/' + ${b.id}}" th:text="${b.nom}"></a></li></ul>
+
+    <h5>Structure principale</h5>
+    <p><a th:if="${personne.structure} != null" th:href="@{'/structures/' + ${personne.structure.id}}" th:text="${personne.structure.nom}"></a></p>
+    <h5>Autres structures impliquées</h5>
+    <ul><li th:each="s : ${personne.structuresImpliquees}"><a th:href="@{'/structures/' + ${s.id}}" th:text="${s.nom}"></a></li></ul>
+
+    <h5>Postes</h5>
+    <ul><li th:each="p : ${personne.postes}"><a th:href="@{'/postes/' + ${p.id}}" th:text="${p}"></a></li></ul>
+    <a class="btn btn-sm btn-outline-primary mb-3" th:href="@{/postes/new}">Ajouter un poste</a>
+
+    <h5>Publications</h5>
+    <ul><li th:each="p : ${personne.publications}"><a th:href="@{'/publications/' + ${p.id}}" th:text="${p.titre}"></a></li></ul>
+
+    <h5>Contrats portés</h5>
+    <ul><li th:each="c : ${personne.contratsPortes}"><a th:href="@{'/contrats/' + ${c.id}}" th:text="${c.nom}"></a></li></ul>
+    <h5>Contrats sous-portés</h5>
+    <ul><li th:each="c : ${personne.contratsSousPortes}"><a th:href="@{'/contrats/' + ${c.id}}" th:text="${c.nom}"></a></li></ul>
+    <h5>Contrats coordonnés</h5>
+    <ul><li th:each="c : ${personne.contratsCoordines}"><a th:href="@{'/contrats/' + ${c.id}}" th:text="${c.nom}"></a></li></ul>
+    <h5>Contrats (partenaire)</h5>
+    <ul><li th:each="c : ${personne.contratsPartenaire}"><a th:href="@{'/contrats/' + ${c.id}}" th:text="${c.nom}"></a></li></ul>
+    <h5>Autres contrats</h5>
+    <ul><li th:each="c : ${personne.contratsAutre}"><a th:href="@{'/contrats/' + ${c.id}}" th:text="${c.nom}"></a></li></ul>
+
+    <a class="btn btn-secondary" th:href="@{'/personnes/' + ${personne.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/personnes}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

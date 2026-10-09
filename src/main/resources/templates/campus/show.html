@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Campus')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${campus.nom}"></h1>
+
+    <h5>Bâtiments</h5>
+    <ul>
+        <li th:each="b : ${campus.batiments}">
+            <a th:href="@{'/batiments/' + ${b.id}}" th:text="${b.nom}"></a>
+        </li>
+    </ul>
+
+    <a class="btn btn-secondary" th:href="@{'/campus/' + ${campus.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/campus}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

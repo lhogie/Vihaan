@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Grades')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Grades</h1>
+        <a class="btn btn-primary" th:href="@{/grades/new}">Ajouter</a>
+    </div>
+    <table class="table table-striped">
+        <thead><tr><th>Code</th><th>Libellé</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.code}"></td>
+            <td><a th:href="@{'/grades/' + ${item.id}}" th:text="${item.libelle}"></a></td>
+            <td class="text-end">
+                <a class="btn btn-sm btn-secondary" th:href="@{'/grades/' + ${item.id} + '/edit'}">Modifier</a>
+                <form class="d-inline" th:action="@{'/grades/' + ${item.id} + '/delete'}" method="post"
+                      onsubmit="return confirm('Supprimer ce grade ?');">
+                    <button class="btn btn-sm btn-danger" type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

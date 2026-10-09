@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Bureaux')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${bureau.nom}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Capacité</dt><dd class="col-sm-9" th:text="${bureau.capacite}"></dd>
+        <dt class="col-sm-3">Bâtiment</dt>
+        <dd class="col-sm-9">
+            <a th:if="${bureau.batiment} != null" th:href="@{'/batiments/' + ${bureau.batiment.id}}" th:text="${bureau.batiment.nom}"></a>
+        </dd>
+    </dl>
+
+    <h5>Structures occupant ce bureau</h5>
+    <ul>
+        <li th:each="s : ${bureau.structures}">
+            <a th:href="@{'/structures/' + ${s.id}}" th:text="${s.nom}"></a>
+        </li>
+    </ul>
+
+    <h5>Personnes ayant ce bureau comme bureau principal</h5>
+    <ul>
+        <li th:each="p : ${bureau.personnesPrincipal}">
+            <a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a>
+        </li>
+    </ul>
+
+    <h5>Personnes ayant ce bureau comme bureau secondaire</h5>
+    <ul>
+        <li th:each="p : ${bureau.personnesSecondaire}">
+            <a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a>
+        </li>
+    </ul>
+
+    <a class="btn btn-secondary" th:href="@{'/bureaux/' + ${bureau.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/bureaux}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

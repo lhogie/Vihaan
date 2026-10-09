@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Batiments')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${batiment.nom}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Campus</dt>
+        <dd class="col-sm-9">
+            <a th:if="${batiment.campus} != null" th:href="@{'/campus/' + ${batiment.campus.id}}" th:text="${batiment.campus.nom}"></a>
+        </dd>
+    </dl>
+
+    <h5>Bureaux</h5>
+    <ul>
+        <li th:each="b : ${batiment.bureaux}">
+            <a th:href="@{'/bureaux/' + ${b.id}}" th:text="${b.nom}"></a>
+        </li>
+    </ul>
+
+    <a class="btn btn-secondary" th:href="@{'/batiments/' + ${batiment.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/batiments}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

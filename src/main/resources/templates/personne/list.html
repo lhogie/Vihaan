@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Personnes')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Personnes</h1>
+        <a class="btn btn-primary" th:href="@{/personnes/new}">Ajouter</a>
+    </div>
+    <table class="table table-striped">
+        <thead><tr><th>Nom</th><th>Genre</th><th>Structure</th><th>Bureau principal</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${items}">
+            <td><a th:href="@{'/personnes/' + ${item.id}}" th:text="${item}"></a></td>
+            <td th:text="${item.genre}"></td>
+            <td>
+                <a th:if="${item.structure} != null" th:href="@{'/structures/' + ${item.structure.id}}" th:text="${item.structure.nom}"></a>
+            </td>
+            <td>
+                <a th:if="${item.bureauPrincipal} != null" th:href="@{'/bureaux/' + ${item.bureauPrincipal.id}}" th:text="${item.bureauPrincipal.nom}"></a>
+            </td>
+            <td class="text-end">
+                <a class="btn btn-sm btn-secondary" th:href="@{'/personnes/' + ${item.id} + '/edit'}">Modifier</a>
+                <form class="d-inline" th:action="@{'/personnes/' + ${item.id} + '/delete'}" method="post"
+                      onsubmit="return confirm('Supprimer cette personne ?');">
+                    <button class="btn btn-sm btn-danger" type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

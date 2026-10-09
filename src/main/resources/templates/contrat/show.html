@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Contrats')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${contrat.nom}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Porteur</dt>
+        <dd class="col-sm-9"><a th:if="${contrat.porteur} != null" th:href="@{'/personnes/' + ${contrat.porteur.id}}" th:text="${contrat.porteur}"></a></dd>
+    </dl>
+
+    <h5>Sous-porteurs</h5>
+    <ul><li th:each="p : ${contrat.sousPorteurs}"><a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a></li></ul>
+
+    <h5>Coordinateurs</h5>
+    <ul><li th:each="p : ${contrat.coordinateurs}"><a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a></li></ul>
+
+    <h5>Partenaires</h5>
+    <ul><li th:each="p : ${contrat.partenaires}"><a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a></li></ul>
+
+    <h5>Autres personnes impliquées</h5>
+    <ul><li th:each="p : ${contrat.autresPersonnes}"><a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a></li></ul>
+
+    <a class="btn btn-secondary" th:href="@{'/contrats/' + ${contrat.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/contrats}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

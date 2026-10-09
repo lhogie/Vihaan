@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Publications')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${publication.id} == null ? 'Nouvelle publication' : 'Modifier la publication'"></h1>
+    <form th:action="@{/publications}" th:object="${publication}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Titre</label>
+            <input class="form-control" th:field="*{titre}">
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Année</label>
+                <input class="form-control" type="number" th:field="*{annee}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Identifiant HAL</label>
+                <input class="form-control" th:field="*{idHal}">
+            </div>
+        </div>
+        <p class="text-muted">Les auteurs se gèrent depuis la fiche de chaque personne.</p>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/publications}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

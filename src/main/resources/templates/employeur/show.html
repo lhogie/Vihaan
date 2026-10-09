@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Employeurs')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${employeur.nom}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Public</dt><dd class="col-sm-9" th:text="${employeur.estPublic} ? 'Oui' : 'Non'"></dd>
+    </dl>
+
+    <h5>Grades proposés</h5>
+    <ul>
+        <li th:each="g : ${employeur.grades}">
+            <a th:href="@{'/grades/' + ${g.id}}" th:text="${g.code} + ' - ' + ${g.libelle}"></a>
+        </li>
+    </ul>
+
+    <h5>Postes chez cet employeur</h5>
+    <ul>
+        <li th:each="p : ${employeur.postes}">
+            <a th:href="@{'/postes/' + ${p.id}}" th:text="${p}"></a>
+        </li>
+    </ul>
+
+    <a class="btn btn-secondary" th:href="@{'/employeurs/' + ${employeur.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/employeurs}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

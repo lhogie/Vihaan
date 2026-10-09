@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Batiments')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${batiment.id} == null ? 'Nouveau bâtiment' : 'Modifier le bâtiment'"></h1>
+    <form th:action="@{/batiments}" th:object="${batiment}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input class="form-control" th:field="*{nom}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Campus</label>
+            <select class="form-select" name="campusId">
+                <option value="">-- aucun --</option>
+                <option th:each="c : ${campusList}" th:value="${c.id}"
+                        th:selected="${batiment.campus} != null and ${batiment.campus.id} == ${c.id}"
+                        th:text="${c.nom}"></option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/batiments}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

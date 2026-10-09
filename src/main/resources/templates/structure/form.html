@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Structures')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${structure.id} == null ? 'Nouvelle structure' : 'Modifier la structure'"></h1>
+    <form th:action="@{/structures}" th:object="${structure}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input class="form-control" th:field="*{nom}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Structure parente</label>
+            <select class="form-select" name="structureParenteId">
+                <option value="">-- aucune --</option>
+                <option th:each="s : ${structureList}" th:if="${structure.id} == null or ${s.id} != ${structure.id}"
+                        th:value="${s.id}"
+                        th:selected="${structure.structureParente} != null and ${structure.structureParente.id} == ${s.id}"
+                        th:text="${s.nom}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Bureaux</label>
+            <select class="form-select" name="bureauxIds" multiple size="6">
+                <option th:each="b : ${bureauList}" th:value="${b.id}"
+                        th:selected="${structure.bureaux.contains(b)}"
+                        th:text="${b.nom}"></option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/structures}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

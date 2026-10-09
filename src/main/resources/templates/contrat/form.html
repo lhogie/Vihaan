@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Contrats')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${contrat.id} == null ? 'Nouveau contrat' : 'Modifier le contrat'"></h1>
+    <form th:action="@{/contrats}" th:object="${contrat}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input class="form-control" th:field="*{nom}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Porteur</label>
+            <select class="form-select" name="porteurId">
+                <option value="">-- aucun --</option>
+                <option th:each="p : ${personneList}" th:value="${p.id}"
+                        th:selected="${contrat.porteur} != null and ${contrat.porteur.id} == ${p.id}"
+                        th:text="${p}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Sous-porteurs</label>
+            <select class="form-select" name="sousPorteursIds" multiple size="5">
+                <option th:each="p : ${personneList}" th:value="${p.id}"
+                        th:selected="${contrat.sousPorteurs.contains(p)}" th:text="${p}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Coordinateurs</label>
+            <select class="form-select" name="coordinateursIds" multiple size="5">
+                <option th:each="p : ${personneList}" th:value="${p.id}"
+                        th:selected="${contrat.coordinateurs.contains(p)}" th:text="${p}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Partenaires</label>
+            <select class="form-select" name="partenairesIds" multiple size="5">
+                <option th:each="p : ${personneList}" th:value="${p.id}"
+                        th:selected="${contrat.partenaires.contains(p)}" th:text="${p}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Autres personnes impliquées</label>
+            <select class="form-select" name="autresPersonnesIds" multiple size="5">
+                <option th:each="p : ${personneList}" th:value="${p.id}"
+                        th:selected="${contrat.autresPersonnes.contains(p)}" th:text="${p}"></option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-link" th:href="@{/contrats}">Annuler</a>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

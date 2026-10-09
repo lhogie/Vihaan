@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Grades')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${grade.libelle}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Code</dt><dd class="col-sm-9" th:text="${grade.code}"></dd>
+    </dl>
+
+    <h5>Employeurs qui proposent ce grade</h5>
+    <ul>
+        <li th:each="e : ${grade.employeurs}">
+            <a th:href="@{'/employeurs/' + ${e.id}}" th:text="${e.nom}"></a>
+        </li>
+    </ul>
+
+    <h5>Postes sur ce grade</h5>
+    <ul>
+        <li th:each="p : ${grade.postes}">
+            <a th:href="@{'/postes/' + ${p.id}}" th:text="${p}"></a>
+        </li>
+    </ul>
+
+    <a class="btn btn-secondary" th:href="@{'/grades/' + ${grade.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/grades}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Structures')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <h1 th:text="${structure.nom}"></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Structure parente</dt>
+        <dd class="col-sm-9">
+            <a th:if="${structure.structureParente} != null" th:href="@{'/structures/' + ${structure.structureParente.id}}" th:text="${structure.structureParente.nom}"></a>
+        </dd>
+    </dl>
+
+    <h5>Sous-structures</h5>
+    <ul>
+        <li th:each="s : ${structure.sousStructures}">
+            <a th:href="@{'/structures/' + ${s.id}}" th:text="${s.nom}"></a>
+        </li>
+    </ul>
+
+    <h5>Bureaux</h5>
+    <ul>
+        <li th:each="b : ${structure.bureaux}">
+            <a th:href="@{'/bureaux/' + ${b.id}}" th:text="${b.nom}"></a>
+        </li>
+    </ul>
+
+    <h5>Personnes rattachées (structure principale)</h5>
+    <ul>
+        <li th:each="p : ${structure.personnesPrincipal}">
+            <a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a>
+        </li>
+    </ul>
+
+    <h5>Personnes impliquées</h5>
+    <ul>
+        <li th:each="p : ${structure.personnesImpliquees}">
+            <a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a>
+        </li>
+    </ul>
+
+    <a class="btn btn-secondary" th:href="@{'/structures/' + ${structure.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-link" th:href="@{/structures}">Retour</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>
