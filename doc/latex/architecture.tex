@@ -1,0 +1,459 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,calc}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{codebg}{gray}{0.96}
+\definecolor{accent}{RGB}{31,78,121}
+\definecolor{couche}{RGB}{225,236,246}
+\definecolor{entite}{RGB}{240,240,240}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single, rulecolor=\color{gray!40},
+  breaklines=true, columns=fixed, basewidth=0.5em,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ç}{{\c c}}1 {ê}{{\^e}}1
+           {ô}{{\^o}}1 {î}{{\^i}}1 {â}{{\^a}}1 {ù}{{\`u}}1 {É}{{\'E}}1,
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{\textbf{Gestion RH du laboratoire}\\[0.3em]\large Description de l'architecture}
+\author{}
+\date{Octobre 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Ce document décrit l'architecture de l'application de gestion des ressources
+humaines du laboratoire : pile technique, découpage en couches, modèle de
+données, conventions des contrôleurs, recherche générique, et invariants à
+respecter lors des évolutions. Il complète le \code{README.md} et le
+\code{CLAUDE.md} du dépôt.
+\end{abstract}
+
+\tableofcontents
+
+%======================================================================
+\section{Objectif et périmètre}
+
+L'application gère les personnes d'un laboratoire de recherche et tout ce qui
+s'y rattache : structures (équipes, services), contrats, employeurs et grades,
+postes occupés, locaux (campus, bâtiments, bureaux), adresses et pays,
+publications.
+
+Les choix de la version~1 sont volontairement minimalistes :
+\begin{itemize}
+  \item une application web monolithique rendue côté serveur, sans frontend
+        séparé ni API REST ;
+  \item pas d'authentification ;
+  \item toute relation du modèle est navigable dans les deux sens depuis
+        l'interface, comme l'exige le cahier des charges ;
+  \item tout le vocabulaire métier (classes, champs, routes, templates) est en
+        français, pour coller au cahier des charges.
+\end{itemize}
+
+%======================================================================
+\section{Pile technique}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Composant} & \textbf{Rôle} \\
+\midrule
+Java 21 & Langage et environnement d'exécution \\
+Spring Boot 4.1 & Socle applicatif (starters \code{webmvc}, \code{data-jpa},
+  \code{thymeleaf}, \code{validation}, \code{devtools}) \\
+Spring Data JPA / Hibernate & Mapping objet-relationnel, repositories,
+  \code{Specification} pour la recherche \\
+Thymeleaf & Rendu HTML côté serveur \\
+Jakarta Bean Validation & Contraintes déclaratives (\code{@NotBlank}) \\
+MariaDB 11 & Base de données, lancée en local via \code{docker compose} \\
+Maven & Build (wrapper \code{mvnw} fourni) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+%======================================================================
+\section{Vue d'ensemble en couches}
+
+L'application suit une architecture MVC classique en trois couches, sans
+couche « service » intermédiaire : la logique métier est réduite et les
+contrôleurs parlent directement aux repositories.
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw=accent, fill=couche, rounded corners=3pt, minimum width=8cm,
+              minimum height=1cm, align=center, font=\small},
+  side/.style={draw=gray, fill=entite, rounded corners=3pt, minimum width=3.6cm,
+               minimum height=1cm, align=center, font=\small},
+  arr/.style={-{Stealth[length=2.5mm]}, thick, accent},
+  node distance=0.6cm
+]
+  \node[box] (nav) {Navigateur\\\footnotesize formulaires HTML, liens, barre de recherche};
+  \node[box, below=of nav] (vue) {Vues Thymeleaf\\\footnotesize \code{templates/<entite>/\{list,form,show\}.html}, \code{layout/fragments.html}};
+  \node[box, below=of vue] (ctl) {Contrôleurs Spring MVC\\\footnotesize 12 contrôleurs CRUD + \code{SearchController} + \code{HomeController}};
+  \node[box, below=of ctl] (repo) {Repositories Spring Data\\\footnotesize \code{JpaRepository} + \code{JpaSpecificationExecutor}};
+  \node[box, below=of repo] (jpa) {Entités JPA / Hibernate\\\footnotesize 12 entités, \code{ddl-auto: update}};
+  \node[box, below=of jpa] (db) {MariaDB\\\footnotesize base \code{hr}};
+
+  \node[side, right=0.7cm of repo] (search) {\code{GenericSearch}\\\footnotesize \code{LIKE} par réflexion};
+  \node[side, right=0.7cm of db] (seed) {\code{DataSeeder}\\\footnotesize pays + grades};
+
+  \draw[arr] (nav) -- node[right,font=\footnotesize]{HTTP GET / POST} (vue);
+  \draw[arr] (vue) -- (ctl);
+  \draw[arr] (ctl) -- (repo);
+  \draw[arr] (repo) -- (jpa);
+  \draw[arr] (jpa) -- node[right,font=\footnotesize]{JDBC} (db);
+  \draw[arr, dashed] (search) -- (repo);
+  \draw[arr, dashed] (seed) -- (jpa);
+\end{tikzpicture}
+\end{center}
+
+\noindent
+La flèche entre le navigateur et les vues résume l'aller-retour HTTP : le
+contrôleur reçoit la requête, prépare le \code{Model} et renvoie le nom d'un
+template que Thymeleaf rend en HTML. \code{open-in-view} est activé, ce qui
+permet aux templates de parcourir les collections paresseuses (pages de détail
+listant les entités liées) pendant le rendu.
+
+%======================================================================
+\section{Organisation du code}
+
+\begin{lstlisting}
+src/main/java/fr/lab/hr/
+  HrApplication.java   point d'entrée Spring Boot
+  model/               12 entités JPA + enum Genre + interface Identifiable
+  repository/          12 interfaces Spring Data JPA
+  controller/          12 contrôleurs CRUD + SearchController + HomeController
+  search/              GenericSearch, SearchHit, SearchResultGroup
+  config/              DataSeeder (tables de référence)
+src/main/resources/
+  application.yml      connexion MariaDB, options JPA et Thymeleaf
+  templates/           list/form/show par entité, layout/, search/
+docker-compose.yml     MariaDB locale pour le développement
+\end{lstlisting}
+
+Toutes les entités implémentent \code{Identifiable} (une seule méthode
+\code{getId()}), ce qui permet à la recherche de construire des liens vers
+n'importe quel résultat sans connaître son type.
+
+%======================================================================
+\section{Modèle de données}
+
+\subsection{Entités}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Entité} & \textbf{Contenu} \\
+\midrule
+\code{Personne} & Identité (nom, prénom, prénom d'usage, nom de jeune fille,
+  genre), badge, naissance, doctorat, statuts (HDR, associé, collaborateur),
+  quotité, ORCID, idHAL, section CNRS, listes de téléphones, e-mails et pages
+  web \\
+\code{Structure} & Nom, structure parente, sous-structures, bureaux \\
+\code{Contrat} & Nom, porteur, sous-porteurs, coordinateurs, partenaires,
+  autres personnes \\
+\code{Employeur} & Nom, public ou non, grades proposés \\
+\code{Grade} & Code et libellé (IE, IR, AI, DR, CR, MCF, PR pré-remplis) \\
+\code{Poste} & Personne, employeur, grade, dates de début et de fin \\
+\code{Bureau} & Nom, capacité, bâtiment \\
+\code{Batiment} & Nom, campus \\
+\code{Campus} & Nom \\
+\code{Adresse} & Rue, ville, code postal, latitude/longitude, pays \\
+\code{Pays} & Code ISO et nom (249 pays pré-remplis) \\
+\code{Publication} & Titre, année, identifiant HAL \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Relations}
+
+La figure~\ref{fig:modele} montre les relations. Chaque flèche part du
+\emph{côté propriétaire} (celui qui porte \code{@JoinColumn} ou
+\code{@JoinTable}, et donc dont le formulaire édite la relation) et pointe
+vers le côté inverse (\code{mappedBy}, lecture seule).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  ent/.style={draw=accent, fill=couche, rounded corners=2pt, minimum width=2.3cm,
+              minimum height=0.8cm, font=\small\ttfamily},
+  rel/.style={-{Stealth[length=2mm]}, accent},
+  lab/.style={font=\scriptsize, fill=white, inner sep=1pt},
+  x=4cm, y=2.6cm
+]
+  \node[ent] (campus)    at (0,2) {Campus};
+  \node[ent] (batiment)  at (1,2) {Batiment};
+  \node[ent] (bureau)    at (2,2) {Bureau};
+  \node[ent] (structure) at (3,2) {Structure};
+  \node[ent] (pays)      at (0,1) {Pays};
+  \node[ent] (adresse)   at (1,1) {Adresse};
+  \node[ent, very thick] (personne) at (2,1) {Personne};
+  \node[ent] (publication) at (3,1) {Publication};
+  \node[ent] (grade)     at (0,0) {Grade};
+  \node[ent] (employeur) at (1,0) {Employeur};
+  \node[ent] (poste)     at (2,0) {Poste};
+  \node[ent] (contrat)   at (3,0) {Contrat};
+
+  \draw[rel] (batiment) -- node[lab,above]{N:1} (campus);
+  \draw[rel] (bureau) -- node[lab,above]{N:1} (batiment);
+  \draw[rel] (structure) -- node[lab,above]{N:M} (bureau);
+  \draw[rel] (structure.north east) .. controls +(0.6,0.7) and +(-0.6,0.7) .. node[lab,above]{parente N:1} (structure.north west);
+
+  \draw[rel] (adresse) -- node[lab,above]{N:1} (pays);
+  \draw[rel] (personne) -- node[lab,above]{N:1} (adresse);
+  \draw[rel] (personne) -- node[lab,above]{N:M} (publication);
+  \draw[rel] ([xshift=-4mm]personne.north) -- node[lab,left]{principal N:1} ([xshift=-4mm]bureau.south);
+  \draw[rel] ([xshift=4mm]personne.north) -- node[lab,right,pos=0.3]{secondaires N:M} ([xshift=4mm]bureau.south);
+  \draw[rel] (personne.north east) -- node[lab,sloped,above,pos=0.65]{N:1 et N:M} (structure.south west);
+
+  \draw[rel] (poste) -- node[lab,left]{N:1} (personne);
+  \draw[rel] (poste) -- node[lab,above]{N:1} (employeur);
+  \draw[rel] (employeur) -- node[lab,above]{N:M} (grade);
+  \draw[rel] (poste.south) to[bend left=25] node[lab,below]{N:1} (grade.south);
+  \draw[rel] (contrat.north west) -- node[lab,sloped,below,pos=0.45]{porteur N:1 + 4 rôles N:M} (personne.south east);
+\end{tikzpicture}
+\caption{Modèle de données. Les flèches partent du côté propriétaire de chaque relation.}
+\label{fig:modele}
+\end{figure}
+
+Toutes les relations sont mappées dans les deux sens : chaque page de détail
+affiche et lie les entités associées, quelle que soit la direction.
+
+\subsection{Tables de jointure}
+
+\begin{center}\footnotesize
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Table} & \textbf{Propriétaire} & \textbf{Vue inverse} \\
+\midrule
+\code{personne\_bureau\_secondaire} & \code{Personne.bureauxSecondaires} & \code{Bureau.personnesSecondaire} \\
+\code{personne\_structure\_impliquee} & \code{Personne.structuresImpliquees} & \code{Structure.personnesImpliquees} \\
+\code{personne\_publication} & \code{Personne.publications} & \code{Publication.auteurs} \\
+\code{structure\_bureau} & \code{Structure.bureaux} & \code{Bureau.structures} \\
+\code{employeur\_grade} & \code{Employeur.grades} & \code{Grade.employeurs} \\
+\code{contrat\_sous\_porteur} & \code{Contrat.sousPorteurs} & \code{Personne.contratsSousPortes} \\
+\code{contrat\_coordinateur} & \code{Contrat.coordinateurs} & \code{Personne.contratsCoordines} \\
+\code{contrat\_partenaire} & \code{Contrat.partenaires} & \code{Personne.contratsPartenaire} \\
+\code{contrat\_autre\_personne} & \code{Contrat.autresPersonnes} & \code{Personne.contratsAutre} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Les listes de chaînes de \code{Personne} sont des \code{@ElementCollection}
+stockées dans \code{personne\_telephone}, \code{personne\_email} et
+\code{personne\_page\_web}.
+
+\subsection{Décisions de modélisation}
+
+\begin{description}
+  \item[Bureaux d'une personne.] Un bureau principal (\code{ManyToOne}) et une
+    liste de bureaux secondaires (\code{ManyToMany}), le cahier des charges
+    mentionnant les deux sans les distinguer.
+  \item[Identité.] Ajout de \code{nom}/\code{prenom} en plus de
+    \code{nomJeuneFille}/\code{prenomUsage}. L'affichage utilise le prénom
+    d'usage s'il est renseigné.
+  \item[Employeurs et grades.] Plutôt que de sous-classer EPST et Université en
+    dur, chaque \code{Employeur} choisit ses \code{Grade} dans un catalogue
+    commun. La règle « les employeurs publics définissent des statuts » reste
+    ainsi modifiable depuis l'interface.
+  \item[Contrats.] Cinq relations distinctes vers \code{Personne}, une par rôle,
+    toutes possédées par \code{Contrat}.
+  \item[Publications.] Entité minimale (titre, année, idHAL). Les auteurs se
+    gèrent depuis la fiche de la personne, côté propriétaire.
+\end{description}
+
+%======================================================================
+\section{Couche web}
+
+\subsection{Pattern CRUD commun}
+
+Les 12 contrôleurs suivent exactement le même schéma, illustré ici pour
+\code{/personnes} :
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Méthode} & \textbf{Route} & \textbf{Action} \\
+\midrule
+GET  & \code{/personnes} & liste (\code{personne/list}) \\
+GET  & \code{/personnes/new} & formulaire de création (\code{personne/form}) \\
+GET  & \code{/personnes/\{id\}/edit} & formulaire de modification (\code{personne/form}) \\
+GET  & \code{/personnes/\{id\}} & page de détail (\code{personne/show}) \\
+POST & \code{/personnes} & création ou modification selon le champ caché \code{id} \\
+POST & \code{/personnes/\{id\}/delete} & suppression \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Après un \code{save} ou un \code{delete}, le contrôleur redirige vers la liste
+(pattern Post/Redirect/Get). En cas d'erreur de validation, le formulaire est
+réaffiché avec les listes de référence nécessaires aux \code{<select>}.
+
+\subsection{Résolution explicite des relations}
+
+Il n'y a pas de \code{Converter<String, Entity>} global. Chaque formulaire
+poste les identifiants des entités liées dans des paramètres séparés, que le
+contrôleur résout lui-même :
+
+\begin{lstlisting}[language=Java]
+@PostMapping
+public String save(@Valid @ModelAttribute("personne") Personne personne,
+        BindingResult result,
+        @RequestParam(required = false) Long bureauPrincipalId,
+        @RequestParam(required = false) List<Long> bureauxSecondairesIds,
+        ...) {
+    personne.setBureauPrincipal(bureauPrincipalId != null
+            ? bureauRepository.findById(bureauPrincipalId).orElse(null) : null);
+    personne.setBureauxSecondaires(bureauxSecondairesIds != null
+            ? bureauRepository.findAllById(bureauxSecondairesIds)
+            : Collections.emptyList());
+    ...
+    repository.save(personne);
+    return "redirect:/personnes";
+}
+\end{lstlisting}
+
+Ce choix rend le comportement de chaque formulaire lisible sans connaître la
+configuration globale de Spring, au prix d'un peu de répétition.
+
+\subsection{Listes de chaînes}
+
+Les listes simples (téléphones, e-mails, pages web) sont éditées dans un
+\code{<textarea>}, une valeur par ligne, et découpées côté serveur par
+\code{linesToList}. Aucun JavaScript n'est nécessaire.
+
+\subsection{Vues}
+
+Chaque entité possède trois templates : \code{list.html} (tableau, liens
+d'ajout et de suppression), \code{form.html} (création et modification,
+\code{<select>} simples ou multiples pour les relations) et \code{show.html}
+(détail, avec les entités liées cliquables dans les deux sens). La barre de
+navigation et la barre de recherche sont factorisées dans
+\code{layout/fragments.html}.
+
+%======================================================================
+\section{Recherche globale}
+
+Aucune requête de recherche n'est écrite à la main. \code{GenericSearch}
+construit par réflexion une \code{Specification} JPA qui applique un
+\code{LIKE} insensible à la casse sur tous les champs \code{String} déclarés de
+l'entité :
+
+\begin{lstlisting}[language=Java]
+public static <T> Specification<T> containing(Class<T> entityClass, String term) {
+    String pattern = "%" + term.toLowerCase() + "%";
+    return (root, query, cb) -> {
+        List<Predicate> predicates = new ArrayList<>();
+        for (Field field : entityClass.getDeclaredFields()) {
+            if (field.getType().equals(String.class)) {
+                predicates.add(cb.like(cb.lower(root.get(field.getName())), pattern));
+            }
+        }
+        if (predicates.isEmpty()) {
+            return cb.disjunction();
+        }
+        return cb.or(predicates.toArray(new Predicate[0]));
+    };
+}
+\end{lstlisting}
+
+\code{SearchController} (\code{GET /recherche?q=...}) applique cette
+spécification aux 12 repositories, regroupe les résultats par type
+(\code{SearchResultGroup} de \code{SearchHit}) et masque les groupes vides.
+Une nouvelle entité devient cherchable en l'ajoutant simplement à la liste de
+\code{SearchController.rechercher()}.
+
+La recherche ne porte que sur les champs texte directs : chercher le nom d'une
+structure fera remonter la structure, pas les personnes qui y sont rattachées.
+
+%======================================================================
+\section{Persistance et configuration}
+
+\begin{itemize}
+  \item \textbf{Schéma.} \code{spring.jpa.hibernate.ddl-auto: update} :
+    Hibernate crée et fait évoluer le schéma au démarrage. Il n'y a pas de
+    migrations Flyway/Liquibase.
+  \item \textbf{Base locale.} \code{docker-compose.yml} lance
+    \code{mariadb:11} sur le port 3306, base \code{hr}, utilisateur
+    \code{hr}/\code{hr}, avec un volume nommé \code{db\_data}.
+  \item \textbf{Données de référence.} \code{DataSeeder}
+    (\code{ApplicationRunner}) remplit \code{pays} à partir de
+    \code{Locale.getISOCountries()} (noms en français) et \code{grade} avec
+    IE, IR, AI, DR, CR, MCF et PR. Il ne fait rien si les tables contiennent
+    déjà des données.
+  \item \textbf{Développement.} Cache Thymeleaf désactivé et
+    \code{spring-boot-devtools} pour le rechargement à chaud.
+\end{itemize}
+
+\begin{lstlisting}
+docker compose up -d     # MariaDB locale
+mvn spring-boot:run      # application sur http://localhost:8080
+\end{lstlisting}
+
+%======================================================================
+\section{Invariants et pièges connus}
+
+\subsection{Pas de cascade sur les collections non resoumises}
+
+Chaque \code{POST} reconstruit l'entité à partir du formulaire via
+\code{@ModelAttribute}. Les collections absentes du formulaire reviennent donc
+à leur valeur par défaut, en général une liste vide. Si une telle collection
+porte \code{cascade = CascadeType.ALL, orphanRemoval = true}, Hibernate
+supprime silencieusement toutes les lignes enfants à la sauvegarde suivante du
+parent.
+
+C'est arrivé avec \code{Personne.postes} : chaque enregistrement d'une
+personne effaçait ses postes. La correction a été de retirer cascade et
+orphanRemoval ; \code{postes} est désormais une vue inverse en lecture seule,
+les postes étant gérés par leur propre contrôleur.
+
+\textbf{Règle :} si l'entité enfant a son propre contrôleur CRUD, ne pas
+mettre de cascade côté parent.
+
+\subsection{Les côtés inverses ne s'éditent pas}
+
+Les collections \code{mappedBy} (par exemple \code{Bureau.personnesPrincipal}
+ou \code{Publication.auteurs}) sont uniquement affichées. Une relation se
+modifie toujours depuis le formulaire de l'entité propriétaire.
+
+\subsection{Toute nouvelle relation est bidirectionnelle}
+
+Le cahier des charges exige la navigation dans les deux sens : toute relation
+ajoutée doit être mappée des deux côtés, éditée via des paramètres
+\code{xxxId}/\code{xxxIds} côté propriétaire, et affichée sur les deux pages de
+détail.
+
+%======================================================================
+\section{Limites et évolutions possibles}
+
+\begin{itemize}
+  \item Pas d'authentification ni de gestion des droits (voulu pour la v1).
+  \item \code{ddl-auto: update} ne convient pas à la production : passer à des
+    migrations versionnées (Flyway) avant tout déploiement réel.
+  \item Le formulaire \code{Poste} propose tous les grades, sans les filtrer
+    selon ceux de l'employeur choisi.
+  \item La recherche ne traverse pas les relations.
+  \item Les tests automatisés se limitent au test de chargement du contexte
+    (\code{HrApplicationTests}) ; toute règle métier non triviale ajoutée
+    devrait être accompagnée d'un test.
+\end{itemize}
+
+\end{document}

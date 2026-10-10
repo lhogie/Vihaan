@@ -4,6 +4,7 @@
 <body>
 <nav th:replace="~{layout/fragments :: nav}"></nav>
 <main class="container my-4">
+    <a class="type-entite" th:href="@{/contrats}" title="Voir la liste">Contrat</a>
     <h1 th:text="${contrat.id} == null ? 'Nouveau contrat' : 'Modifier le contrat'"></h1>
     <form th:action="@{/contrats}" th:object="${contrat}" method="post">
         <input type="hidden" th:field="*{id}">

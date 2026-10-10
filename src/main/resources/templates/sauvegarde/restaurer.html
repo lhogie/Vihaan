@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Restaurer')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <span class="type-entite">Sauvegarde</span>
+    <h1>Restaurer la base</h1>
+    <div th:replace="~{layout/fragments :: messages}"></div>
+
+    <p>Remplace <strong>tout le contenu de la base</strong> par celui d'un fichier produit par
+        « Export JSON » (barre latérale). Les identifiants du fichier sont conservés : liens et adresses
+        des fiches redeviennent ceux de la sauvegarde.</p>
+    <p class="text-muted">Les données actuelles absentes du fichier sont perdues. En cas d'erreur, rien n'est modifié.
+        Les exports d'un seul type (bouton « Export JSON » d'une liste) sont refusés.</p>
+    <p><a class="btn btn-secondary" th:href="@{/export/json}">Sauvegarder d'abord la base actuelle</a></p>
+
+    <h5>Fichier de sauvegarde</h5>
+    <form th:action="@{/import/json}" method="post" enctype="multipart/form-data"
+          onsubmit="if (!confirm('Remplacer tout le contenu de la base par ce fichier ?')) return false; this.querySelector('button').disabled = true;">
+        <div class="mb-3">
+            <input class="form-control" type="file" name="fichier" accept=".json,application/json" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Restaurer</button>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

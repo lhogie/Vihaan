@@ -1,6 +1,6 @@
 # Instructions pour les agents IA travaillant sur ce dépôt
 
-Application de gestion RH de laboratoire : Spring Boot 4.1 (Java 21) + Spring Data JPA + MariaDB + Thymeleaf. Pas de frontend séparé, pas d'API REST, pas d'authentification (voulu pour la v1). Voir `README.md` pour l'architecture complète et les décisions de conception ; ce fichier ne couvre que ce qu'un agent doit savoir avant de modifier le code.
+Application de gestion RH de laboratoire : Spring Boot 4.1 (Java 21) + Spring Data JPA + MariaDB + Thymeleaf. Pas de frontend séparé, pas d'API REST. Connexion obligatoire avec deux rôles, LECTEUR et GESTIONNAIRE (Spring Security, comptes locaux en attendant un SSO). Voir `README.md` pour l'architecture complète et les décisions de conception ; ce fichier ne couvre que ce qu'un agent doit savoir avant de modifier le code.
 
 ## Convention de nommage
 
@@ -44,7 +44,7 @@ mvn spring-boot:run
 
 Avant de considérer une modification UI terminée, vérifier au minimum :
 1. `mvn compile` passe.
-2. La page liste, le formulaire (new + edit) et la page de détail de l'entité touchée répondent 200.
+2. La page liste, le formulaire (new + edit) et la page de détail de l'entité touchée répondent 200, une fois connecté avec le compte `gestionnaire` (sinon redirection vers `/login`). Toute nouvelle URL d'écriture doit être couverte par les règles de `securite/ConfigurationSecurite.java` (POST et formulaires réservés au GESTIONNAIRE) et ses boutons masqués par `th:if="${peutModifier}"` ; `SecuriteTest` vérifie ces règles.
 3. Si la modification touche une relation : vérifier en base (`mariadb ... -e "SELECT * FROM <table_de_jointure>"`) que la relation est bien écrite, pas seulement que la page s'affiche.
 
-Il n'y a pas de tests automatisés au-delà du test de contexte Spring Boot par défaut (`HrApplicationTests`). Si une logique non trivale est ajoutée (ex: règle de validation métier), ajouter un test plutôt que de vérifier seulement manuellement.
+Les tests (`mvn test`) couvrent l'import HAL, le rapport Markdown, l'export et la restauration JSON, le vidage et les droits d'accès (`SecuriteTest`). Ils utilisent la base de développement en lecture seule : aucun test ne doit la modifier. Si une logique non triviale est ajoutée (ex: règle de validation métier), ajouter un test plutôt que de vérifier seulement manuellement.

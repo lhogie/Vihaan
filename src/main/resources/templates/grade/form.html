@@ -4,6 +4,7 @@
 <body>
 <nav th:replace="~{layout/fragments :: nav}"></nav>
 <main class="container my-4">
+    <a class="type-entite" th:href="@{/grades}" title="Voir la liste">Grade</a>
     <h1 th:text="${grade.id} == null ? 'Nouveau grade' : 'Modifier le grade'"></h1>
     <form th:action="@{/grades}" th:object="${grade}" method="post">
         <input type="hidden" th:field="*{id}">

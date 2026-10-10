@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Accès refusé')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <span class="type-entite">Erreur 403</span>
+    <h1>Accès refusé</h1>
+    <p>Cette action est réservée aux gestionnaires. Votre compte permet de consulter les données, pas de les modifier.</p>
+    <a class="btn btn-secondary" th:href="@{/}">Retour à l'accueil</a>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

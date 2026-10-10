@@ -52,7 +52,7 @@ public class Personne implements Identifiable {
 
     private boolean estCollaborateur;
 
-    private Integer quotiteTravail;
+    private Integer quotiteTravail = 100;
 
     private String orcid;
 

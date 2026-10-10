@@ -4,6 +4,7 @@
 <body>
 <nav th:replace="~{layout/fragments :: nav}"></nav>
 <main class="container my-4">
+    <a class="type-entite" th:href="@{/contrats}" title="Voir la liste">Contrat</a>
     <h1 th:text="${contrat.nom}"></h1>
     <dl class="row">
         <dt class="col-sm-3">Porteur</dt>
@@ -22,7 +23,7 @@
     <h5>Autres personnes impliquées</h5>
     <ul><li th:each="p : ${contrat.autresPersonnes}"><a th:href="@{'/personnes/' + ${p.id}}" th:text="${p}"></a></li></ul>
 
-    <a class="btn btn-secondary" th:href="@{'/contrats/' + ${contrat.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-secondary" th:if="${peutModifier}" th:href="@{'/contrats/' + ${contrat.id} + '/edit'}">Modifier</a>
     <a class="btn btn-link" th:href="@{/contrats}">Retour</a>
 </main>
 <div th:replace="~{layout/fragments :: scripts}"></div>

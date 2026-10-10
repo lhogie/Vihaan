@@ -6,15 +6,18 @@
 <main class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Employeurs</h1>
-        <a class="btn btn-primary" th:href="@{/employeurs/new}">Ajouter</a>
+        <div class="d-flex gap-2" th:if="${peutModifier}">
+            <a class="btn btn-secondary" th:href="@{/export/json/employeurs}" title="Télécharger les employeurs au format JSON">Export JSON</a>
+            <a class="btn btn-primary" th:href="@{/employeurs/new}">Ajouter</a>
+        </div>
     </div>
     <table class="table table-striped">
-        <thead><tr><th>Nom</th><th>Public</th><th></th></tr></thead>
+        <thead><tr><th>Nom</th><th>Public</th><th th:if="${peutModifier}"></th></tr></thead>
         <tbody>
         <tr th:each="item : ${items}">
             <td><a th:href="@{'/employeurs/' + ${item.id}}" th:text="${item.nom}"></a></td>
             <td th:text="${item.estPublic} ? 'Oui' : 'Non'"></td>
-            <td class="text-end">
+            <td class="text-end" th:if="${peutModifier}">
                 <a class="btn btn-sm btn-secondary" th:href="@{'/employeurs/' + ${item.id} + '/edit'}">Modifier</a>
                 <form class="d-inline" th:action="@{'/employeurs/' + ${item.id} + '/delete'}" method="post"
                       onsubmit="return confirm('Supprimer cet employeur ?');">

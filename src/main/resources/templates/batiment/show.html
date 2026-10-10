@@ -4,6 +4,7 @@
 <body>
 <nav th:replace="~{layout/fragments :: nav}"></nav>
 <main class="container my-4">
+    <a class="type-entite" th:href="@{/batiments}" title="Voir la liste">Bâtiment</a>
     <h1 th:text="${batiment.nom}"></h1>
     <dl class="row">
         <dt class="col-sm-3">Campus</dt>
@@ -19,7 +20,7 @@
         </li>
     </ul>
 
-    <a class="btn btn-secondary" th:href="@{'/batiments/' + ${batiment.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-secondary" th:if="${peutModifier}" th:href="@{'/batiments/' + ${batiment.id} + '/edit'}">Modifier</a>
     <a class="btn btn-link" th:href="@{/batiments}">Retour</a>
 </main>
 <div th:replace="~{layout/fragments :: scripts}"></div>

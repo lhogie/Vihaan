@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Vider la base')}"></head>
+<body>
+<nav th:replace="~{layout/fragments :: nav}"></nav>
+<main class="container my-4">
+    <span class="type-entite">Sauvegarde</span>
+    <h1>Vider la base</h1>
+    <div th:replace="~{layout/fragments :: messages}"></div>
+
+    <p>Supprime <strong>toutes les données</strong> : personnes, structures, contrats, postes, publications,
+        locaux, employeurs, grades et pays. Les pays et les grades de référence (IE, IR, AI, DR, CR, MCF, PR)
+        sont ensuite recréés, comme lors d'une première installation.</p>
+    <p class="text-muted">Cette opération est irréversible, sauf à restaurer une sauvegarde.</p>
+    <p><a class="btn btn-secondary" th:href="@{/export/json}">Sauvegarder d'abord la base actuelle</a></p>
+
+    <h5>Confirmation</h5>
+    <form th:action="@{/vider}" method="post"
+          onsubmit="if (!confirm('Supprimer définitivement toutes les données ?')) return false; this.querySelector('button').disabled = true;">
+        <div class="mb-3">
+            <label class="form-label" for="confirmation">Saisir <strong>VIDER</strong> pour confirmer</label>
+            <input class="form-control" id="confirmation" name="confirmation" autocomplete="off" required
+                   pattern="\s*VIDER\s*" title="Saisir VIDER en majuscules">
+        </div>
+        <button class="btn btn-danger" type="submit">Vider la base</button>
+    </form>
+</main>
+<div th:replace="~{layout/fragments :: scripts}"></div>
+</body>
+</html>

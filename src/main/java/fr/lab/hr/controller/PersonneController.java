@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import fr.lab.hr.hal.ImportHal;
 import fr.lab.hr.model.Personne;
 import fr.lab.hr.repository.AdresseRepository;
 import fr.lab.hr.repository.BureauRepository;
@@ -32,15 +35,17 @@ public class PersonneController {
     private final BureauRepository bureauRepository;
     private final StructureRepository structureRepository;
     private final PublicationRepository publicationRepository;
+    private final ImportHal importHal;
 
     public PersonneController(PersonneRepository repository, AdresseRepository adresseRepository,
             BureauRepository bureauRepository, StructureRepository structureRepository,
-            PublicationRepository publicationRepository) {
+            PublicationRepository publicationRepository, ImportHal importHal) {
         this.repository = repository;
         this.adresseRepository = adresseRepository;
         this.bureauRepository = bureauRepository;
         this.structureRepository = structureRepository;
         this.publicationRepository = publicationRepository;
+        this.importHal = importHal;
     }
 
     @GetMapping
@@ -106,6 +111,21 @@ public class PersonneController {
         personne.setPagesWeb(linesToList(pagesWebTexte));
         repository.save(personne);
         return "redirect:/personnes";
+    }
+
+    @PostMapping("/{id}/hal")
+    public String mettreAJourDepuisHal(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Personne personne = repository.findById(id).orElseThrow();
+        if (!ImportHal.aUnIdHal(personne)) {
+            redirectAttributes.addFlashAttribute("erreur", "Renseigner l'identifiant HAL de la personne avant l'import.");
+        } else {
+            try {
+                redirectAttributes.addFlashAttribute("message", importHal.importerPourPersonne(id).getMessage());
+            } catch (RestClientException e) {
+                redirectAttributes.addFlashAttribute("erreur", "HAL injoignable : " + e.getMessage());
+            }
+        }
+        return "redirect:/personnes/" + id;
     }
 
     @PostMapping("/{id}/delete")

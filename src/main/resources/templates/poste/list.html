@@ -6,10 +6,13 @@
 <main class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Postes</h1>
-        <a class="btn btn-primary" th:href="@{/postes/new}">Ajouter</a>
+        <div class="d-flex gap-2" th:if="${peutModifier}">
+            <a class="btn btn-secondary" th:href="@{/export/json/postes}" title="Télécharger les postes au format JSON">Export JSON</a>
+            <a class="btn btn-primary" th:href="@{/postes/new}">Ajouter</a>
+        </div>
     </div>
     <table class="table table-striped">
-        <thead><tr><th>Personne</th><th>Employeur</th><th>Grade</th><th>Début</th><th>Fin</th><th></th></tr></thead>
+        <thead><tr><th>Personne</th><th>Employeur</th><th>Grade</th><th>Début</th><th>Fin</th><th th:if="${peutModifier}"></th></tr></thead>
         <tbody>
         <tr th:each="item : ${items}">
             <td>
@@ -21,7 +24,7 @@
             <td th:text="${item.grade} != null ? ${item.grade.code} : ''"></td>
             <td th:text="${item.dateDebut}"></td>
             <td th:text="${item.dateFin}"></td>
-            <td class="text-end">
+            <td class="text-end" th:if="${peutModifier}">
                 <a class="btn btn-sm btn-secondary" th:href="@{'/postes/' + ${item.id} + '/edit'}">Modifier</a>
                 <form class="d-inline" th:action="@{'/postes/' + ${item.id} + '/delete'}" method="post"
                       onsubmit="return confirm('Supprimer ce poste ?');">

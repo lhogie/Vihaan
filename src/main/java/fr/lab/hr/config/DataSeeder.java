@@ -30,6 +30,11 @@ public class DataSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        peupler();
+    }
+
+    /** Remplit les tables de référence vides ; appelé au démarrage et après « Vider la base ». */
+    public void peupler() {
         seedPays();
         seedGrades();
     }

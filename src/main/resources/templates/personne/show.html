@@ -4,7 +4,9 @@
 <body>
 <nav th:replace="~{layout/fragments :: nav}"></nav>
 <main class="container my-4">
+    <a class="type-entite" th:href="@{/personnes}" title="Voir la liste">Personne</a>
     <h1 th:text="${personne}"></h1>
+    <div th:replace="~{layout/fragments :: messages}"></div>
     <dl class="row">
         <dt class="col-sm-3">Nom</dt><dd class="col-sm-9" th:text="${personne.nom}"></dd>
         <dt class="col-sm-3">Prénom</dt><dd class="col-sm-9" th:text="${personne.prenom}"></dd>
@@ -45,10 +47,16 @@
 
     <h5>Postes</h5>
     <ul><li th:each="p : ${personne.postes}"><a th:href="@{'/postes/' + ${p.id}}" th:text="${p}"></a></li></ul>
-    <a class="btn btn-sm btn-outline-primary mb-3" th:href="@{/postes/new}">Ajouter un poste</a>
+    <a class="btn btn-sm btn-outline-primary mb-3" th:if="${peutModifier}" th:href="@{/postes/new}">Ajouter un poste</a>
 
     <h5>Publications</h5>
     <ul><li th:each="p : ${personne.publications}"><a th:href="@{'/publications/' + ${p.id}}" th:text="${p.titre}"></a></li></ul>
+    <form class="mb-3" th:if="${peutModifier}" th:action="@{'/personnes/' + ${personne.id} + '/hal'}" method="post"
+          onsubmit="this.querySelector('button').disabled = true;">
+        <button class="btn btn-sm btn-outline-primary" type="submit"
+                th:disabled="${personne.idHal == null or #strings.isEmpty(#strings.trim(personne.idHal))}"
+                th:title="${personne.idHal == null or #strings.isEmpty(#strings.trim(personne.idHal))} ? 'Renseigner l\'identifiant HAL pour activer l\'import' : 'Importe les publications HAL de cette personne'">Mettre à jour depuis HAL</button>
+    </form>
 
     <h5>Contrats portés</h5>
     <ul><li th:each="c : ${personne.contratsPortes}"><a th:href="@{'/contrats/' + ${c.id}}" th:text="${c.nom}"></a></li></ul>
@@ -61,7 +69,7 @@
     <h5>Autres contrats</h5>
     <ul><li th:each="c : ${personne.contratsAutre}"><a th:href="@{'/contrats/' + ${c.id}}" th:text="${c.nom}"></a></li></ul>
 
-    <a class="btn btn-secondary" th:href="@{'/personnes/' + ${personne.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-secondary" th:if="${peutModifier}" th:href="@{'/personnes/' + ${personne.id} + '/edit'}">Modifier</a>
     <a class="btn btn-link" th:href="@{/personnes}">Retour</a>
 </main>
 <div th:replace="~{layout/fragments :: scripts}"></div>

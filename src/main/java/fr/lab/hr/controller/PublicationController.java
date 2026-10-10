@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import fr.lab.hr.hal.ImportHal;
 import fr.lab.hr.model.Publication;
 import fr.lab.hr.repository.PublicationRepository;
 
@@ -19,9 +22,11 @@ import fr.lab.hr.repository.PublicationRepository;
 public class PublicationController {
 
     private final PublicationRepository repository;
+    private final ImportHal importHal;
 
-    public PublicationController(PublicationRepository repository) {
+    public PublicationController(PublicationRepository repository, ImportHal importHal) {
         this.repository = repository;
+        this.importHal = importHal;
     }
 
     @GetMapping
@@ -54,6 +59,16 @@ public class PublicationController {
             return "publication/form";
         }
         repository.save(publication);
+        return "redirect:/publications";
+    }
+
+    @PostMapping("/hal")
+    public String mettreAJourDepuisHal(RedirectAttributes redirectAttributes) {
+        try {
+            redirectAttributes.addFlashAttribute("message", importHal.importerPourTous().getMessage());
+        } catch (RestClientException e) {
+            redirectAttributes.addFlashAttribute("erreur", "HAL injoignable : " + e.getMessage());
+        }
         return "redirect:/publications";
     }
 

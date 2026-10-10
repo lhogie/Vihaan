@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head('Connexion')}"></head>
+<body class="page-connexion">
+<main class="connexion">
+    <div class="connexion-marque">Gestion RH<small>Laboratoire</small></div>
+    <h1>Connexion</h1>
+    <div class="alert alert-danger" th:if="${param.error}">Identifiant ou mot de passe incorrect.</div>
+    <div class="alert alert-success" th:if="${param.deconnecte}">Vous êtes déconnecté.</div>
+    <form th:action="@{/login}" method="post">
+        <div class="mb-3">
+            <label class="form-label" for="username">Identifiant</label>
+            <input class="form-control" id="username" name="username" autocomplete="username" required autofocus>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="password">Mot de passe</label>
+            <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Se connecter</button>
+    </form>
+</main>
+</body>
+</html>

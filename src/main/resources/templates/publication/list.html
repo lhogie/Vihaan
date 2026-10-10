@@ -6,16 +6,25 @@
 <main class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Publications</h1>
-        <a class="btn btn-primary" th:href="@{/publications/new}">Ajouter</a>
+        <div th:if="${peutModifier}">
+            <form class="d-inline" th:action="@{/publications/hal}" method="post"
+                  onsubmit="this.querySelector('button').disabled = true;">
+                <button class="btn btn-outline-primary" type="submit"
+                        title="Importe les publications HAL de chaque personne ayant un identifiant HAL">Mettre à jour depuis HAL</button>
+            </form>
+            <a class="btn btn-secondary" th:href="@{/export/json/publications}" title="Télécharger les publications au format JSON">Export JSON</a>
+            <a class="btn btn-primary" th:href="@{/publications/new}">Ajouter</a>
+        </div>
     </div>
+    <div th:replace="~{layout/fragments :: messages}"></div>
     <table class="table table-striped">
-        <thead><tr><th>Titre</th><th>Année</th><th>HAL</th><th></th></tr></thead>
+        <thead><tr><th>Titre</th><th>Année</th><th>HAL</th><th th:if="${peutModifier}"></th></tr></thead>
         <tbody>
         <tr th:each="item : ${items}">
             <td><a th:href="@{'/publications/' + ${item.id}}" th:text="${item.titre}"></a></td>
             <td th:text="${item.annee}"></td>
             <td th:text="${item.idHal}"></td>
-            <td class="text-end">
+            <td class="text-end" th:if="${peutModifier}">
                 <a class="btn btn-sm btn-secondary" th:href="@{'/publications/' + ${item.id} + '/edit'}">Modifier</a>
                 <form class="d-inline" th:action="@{'/publications/' + ${item.id} + '/delete'}" method="post"
                       onsubmit="return confirm('Supprimer cette publication ?');">

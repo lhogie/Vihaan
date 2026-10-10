@@ -4,6 +4,7 @@
 <body>
 <nav th:replace="~{layout/fragments :: nav}"></nav>
 <main class="container my-4">
+    <a class="type-entite" th:href="@{/postes}" title="Voir la liste">Poste</a>
     <h1 th:text="${poste}"></h1>
     <dl class="row">
         <dt class="col-sm-3">Personne</dt>
@@ -15,7 +16,7 @@
         <dt class="col-sm-3">Début</dt><dd class="col-sm-9" th:text="${poste.dateDebut}"></dd>
         <dt class="col-sm-3">Fin</dt><dd class="col-sm-9" th:text="${poste.dateFin}"></dd>
     </dl>
-    <a class="btn btn-secondary" th:href="@{'/postes/' + ${poste.id} + '/edit'}">Modifier</a>
+    <a class="btn btn-secondary" th:if="${peutModifier}" th:href="@{'/postes/' + ${poste.id} + '/edit'}">Modifier</a>
     <a class="btn btn-link" th:href="@{/postes}">Retour</a>
 </main>
 <div th:replace="~{layout/fragments :: scripts}"></div>

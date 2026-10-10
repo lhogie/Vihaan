@@ -10,4 +10,10 @@ public class HomeController {
     public String accueil() {
         return "redirect:/personnes";
     }
+
+    /** Formulaire de connexion ; le POST /login est traité par Spring Security. */
+    @GetMapping("/login")
+    public String connexion() {
+        return "login";
+    }
 }

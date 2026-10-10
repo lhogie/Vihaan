@@ -1,0 +1,665 @@
+/*
+ * Thème « éditorial » de l'application, posé par-dessus Bootstrap.
+ * Il restyle les classes Bootstrap déjà utilisées par les templates
+ * (table, btn, form-control, dl.row...) : aucun template de page n'a besoin
+ * de classes spécifiques. Seul layout/fragments.html porte la structure
+ * (barre latérale + en-tête).
+ */
+
+:root {
+    --encre: #16213a;
+    --encre-douce: #24324f;
+    --texte: #1f2430;
+    --texte-doux: #5d6577;
+    --texte-pale: #8a91a1;
+    --or: #b48a4a;
+    --or-pale: #f3ead9;
+    --papier: #ffffff;
+    --fond: #f4f2ee;
+    --filet: #e6e2da;
+    --survol: #faf8f4;
+    --danger: #a33a32;
+    --largeur-barre: 248px;
+
+    --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --bs-body-color: var(--texte);
+    --bs-body-bg: var(--papier);
+    --bs-link-color: var(--encre-douce);
+    --bs-link-color-rgb: 36, 50, 79;
+    --bs-link-hover-color: var(--or);
+    --bs-link-hover-color-rgb: 180, 138, 74;
+    --bs-border-color: var(--filet);
+}
+
+body {
+    background: var(--fond);
+    font-size: 0.95rem;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ---------- Barre latérale ---------- */
+
+.barre {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: var(--largeur-barre);
+    background: var(--encre);
+    color: #c9cfdc;
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem 1.1rem 1.2rem;
+    overflow-y: auto;
+    z-index: 1030;
+}
+
+.barre-marque {
+    display: block;
+    color: #fff;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 0 0.6rem;
+}
+
+.barre-marque:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.barre-marque small {
+    display: block;
+    font-family: "Inter", sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--or);
+    margin-top: 0.15rem;
+}
+
+.barre-recherche {
+    margin: 1.4rem 0 0.4rem;
+}
+
+.barre-recherche input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.barre-recherche input::placeholder {
+    color: #8c95a9;
+}
+
+.barre-recherche input:focus {
+    outline: none;
+    border-color: var(--or);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.barre-groupe {
+    margin-top: 1.3rem;
+}
+
+.barre-groupe-titre {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #7d879c;
+    padding: 0 0.6rem;
+    margin-bottom: 0.35rem;
+}
+
+.barre-lien {
+    display: block;
+    color: #c9cfdc;
+    padding: 0.38rem 0.6rem;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    font-size: 0.9rem;
+}
+
+.barre-lien:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+}
+
+.barre-lien.actif {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    border-left-color: var(--or);
+    border-radius: 0 6px 6px 0;
+}
+
+.barre-pied {
+    margin-top: auto;
+    padding-top: 1.4rem;
+}
+
+.barre-pied a {
+    display: block;
+    margin-bottom: 0.45rem;
+    text-align: center;
+    border: 1px solid rgba(180, 138, 74, 0.6);
+    color: #e6d3b1;
+    border-radius: 8px;
+    padding: 0.45rem;
+    font-size: 0.85rem;
+}
+
+.barre-pied a:hover {
+    background: var(--or);
+    color: var(--encre);
+    text-decoration: none;
+}
+
+.barre-pied a.barre-danger {
+    border-color: rgba(214, 120, 110, 0.45);
+    color: #e8b4ad;
+}
+
+.barre-pied a.barre-danger:hover {
+    background: #a33a32;
+    border-color: #a33a32;
+    color: #fff;
+}
+
+.barre-bascule {
+    display: none;
+}
+
+/* ---------- Feuille de contenu ---------- */
+
+main.container {
+    max-width: 1180px;
+    background: var(--papier);
+    border: 1px solid var(--filet);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(22, 33, 58, 0.04), 0 8px 24px rgba(22, 33, 58, 0.04);
+    padding: 2.4rem 2.6rem 2.6rem;
+    margin-top: 2.2rem !important;
+    margin-bottom: 2.2rem !important;
+}
+
+@media (min-width: 992px) {
+    body {
+        padding-left: var(--largeur-barre);
+    }
+
+    main.container {
+        width: calc(100% - 4.4rem);
+    }
+
+    /* Le repli du menu ne sert que sur petit écran. */
+    .barre-contenu.collapse {
+        display: block;
+    }
+}
+
+h1, h2, h3, h4 {
+    font-family: "Source Serif 4", Georgia, serif;
+    color: var(--encre);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.6rem;
+}
+
+/* Type de l'entité affichée ou éditée, au-dessus du titre des fiches et formulaires. */
+.type-entite {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--or);
+    margin-bottom: 0.35rem;
+}
+
+.type-entite:hover {
+    color: var(--encre);
+    text-decoration: none;
+}
+
+.type-entite + h1 {
+    margin-top: 0;
+}
+
+/* En-tête de page « titre + bouton Ajouter » des listes. */
+main > .d-flex:first-child {
+    border-bottom: 1px solid var(--filet);
+    padding-bottom: 1.1rem;
+    margin-bottom: 1.6rem !important;
+}
+
+main > .d-flex:first-child h1 {
+    margin-bottom: 0;
+}
+
+/* Titres de section des fiches et formulaires. */
+h5 {
+    font-family: "Inter", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--texte-doux);
+    margin: 2.1rem 0 0.8rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--filet);
+    position: relative;
+}
+
+h5::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 2.2rem;
+    height: 1px;
+    background: var(--or);
+}
+
+/* ---------- Fiches (dl.row) ---------- */
+
+dl.row {
+    margin: 0;
+    border-top: 1px solid var(--filet);
+}
+
+dl.row > dt,
+dl.row > dd {
+    padding: 0.55rem 0;
+    margin: 0;
+    border-bottom: 1px solid var(--filet);
+}
+
+dl.row > dt {
+    font-weight: 500;
+    color: var(--texte-doux);
+    font-size: 0.85rem;
+}
+
+dl.row > dd:empty::after {
+    content: "—";
+    color: var(--texte-pale);
+}
+
+/* Listes d'entités liées des fiches : puces discrètes. */
+main > ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+main > ul > li {
+    background: var(--survol);
+    border: 1px solid var(--filet);
+    border-radius: 999px;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.86rem;
+}
+
+main > ul > li:hover {
+    border-color: var(--or);
+}
+
+/* ---------- Tableaux ---------- */
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: transparent;
+    --bs-table-hover-bg: var(--survol);
+    margin-bottom: 0;
+}
+
+.table > thead th {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--texte-pale);
+    border-bottom: 1px solid var(--filet);
+    padding: 0.6rem 0.75rem;
+    background: transparent;
+}
+
+.table > tbody td {
+    padding: 0.7rem 0.75rem;
+    border-bottom-color: var(--filet);
+    vertical-align: middle;
+}
+
+.table > tbody tr:hover > * {
+    background: var(--survol);
+    --bs-table-bg-type: var(--survol);
+}
+
+.table > tbody td:first-child a {
+    font-weight: 500;
+    color: var(--encre);
+}
+
+.table > tbody td.text-end {
+    white-space: nowrap;
+    width: 1%;
+}
+
+/* Actions de ligne : discrètes, révélées au survol. */
+.table .btn-sm {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--texte-doux);
+    font-size: 0.8rem;
+    padding: 0.2rem 0.55rem;
+}
+
+.table .btn-sm.btn-secondary:hover {
+    border-color: var(--filet);
+    color: var(--encre);
+    background: var(--papier);
+}
+
+.table .btn-sm.btn-danger {
+    color: var(--danger);
+    opacity: 0.55;
+}
+
+.table tr:hover .btn-sm.btn-danger {
+    opacity: 1;
+}
+
+.table .btn-sm.btn-danger:hover {
+    border-color: rgba(163, 58, 50, 0.35);
+    background: #fbf1f0;
+}
+
+/* ---------- Boutons ---------- */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.88rem;
+    padding: 0.5rem 1.05rem;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--encre);
+    --bs-btn-border-color: var(--encre);
+    --bs-btn-hover-bg: var(--encre-douce);
+    --bs-btn-hover-border-color: var(--encre-douce);
+    --bs-btn-active-bg: var(--encre-douce);
+    --bs-btn-active-border-color: var(--encre-douce);
+    --bs-btn-disabled-bg: var(--encre);
+    --bs-btn-disabled-border-color: var(--encre);
+}
+
+.btn-secondary {
+    --bs-btn-color: var(--encre);
+    --bs-btn-bg: var(--papier);
+    --bs-btn-border-color: #d5d0c6;
+    --bs-btn-hover-color: var(--encre);
+    --bs-btn-hover-bg: var(--survol);
+    --bs-btn-hover-border-color: var(--or);
+    --bs-btn-active-color: var(--encre);
+    --bs-btn-active-bg: var(--survol);
+    --bs-btn-active-border-color: var(--or);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--encre);
+    --bs-btn-border-color: #d5d0c6;
+    --bs-btn-hover-color: var(--encre);
+    --bs-btn-hover-bg: var(--or-pale);
+    --bs-btn-hover-border-color: var(--or);
+    --bs-btn-active-color: var(--encre);
+    --bs-btn-active-bg: var(--or-pale);
+    --bs-btn-active-border-color: var(--or);
+    --bs-btn-disabled-color: var(--texte-pale);
+    --bs-btn-disabled-border-color: var(--filet);
+}
+
+.btn-link {
+    --bs-btn-color: var(--texte-doux);
+    --bs-btn-hover-color: var(--encre);
+}
+
+/* ---------- Formulaires ---------- */
+
+.form-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--texte-doux);
+    margin-bottom: 0.3rem;
+}
+
+.form-control,
+.form-select {
+    border-color: #dcd7cd;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--or);
+    box-shadow: 0 0 0 3px rgba(180, 138, 74, 0.15);
+}
+
+select[multiple].form-select {
+    background-image: none;
+    padding: 0.35rem;
+}
+
+select[multiple].form-select option {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+select[multiple].form-select option:checked {
+    background: var(--or-pale) linear-gradient(0deg, var(--or-pale), var(--or-pale));
+    color: var(--encre);
+}
+
+.form-check-input:checked {
+    background-color: var(--encre);
+    border-color: var(--encre);
+}
+
+.form-check-input:focus {
+    border-color: var(--or);
+    box-shadow: 0 0 0 3px rgba(180, 138, 74, 0.15);
+}
+
+form > button[type="submit"].btn-primary {
+    margin-top: 1.2rem;
+}
+
+/* ---------- Messages et recherche ---------- */
+
+.alert {
+    border-radius: 10px;
+    border-width: 0 0 0 3px;
+    font-size: 0.9rem;
+}
+
+.alert-success {
+    background: #f1f6f1;
+    border-color: #4f7d55;
+    color: #2d4a31;
+}
+
+.btn-danger {
+    --bs-btn-bg: var(--danger);
+    --bs-btn-border-color: var(--danger);
+    --bs-btn-hover-bg: #8a2f28;
+    --bs-btn-hover-border-color: #8a2f28;
+}
+
+.alert-danger {
+    background: #fbf1f0;
+    border-color: var(--danger);
+    color: #6e2620;
+}
+
+.list-group {
+    --bs-list-group-border-color: var(--filet);
+    --bs-list-group-border-radius: 10px;
+}
+
+.list-group-item:hover {
+    background: var(--survol);
+}
+
+h4 {
+    font-size: 1.15rem;
+    margin-top: 1.6rem;
+}
+
+.text-muted {
+    color: var(--texte-pale) !important;
+}
+
+/* ---------- Connexion ---------- */
+
+body.page-connexion {
+    padding-left: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--encre);
+}
+
+main.connexion {
+    width: min(400px, calc(100% - 2rem));
+    background: var(--papier);
+    border-radius: 14px;
+    padding: 2.2rem 2.2rem 2.4rem;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.25);
+}
+
+.connexion-marque {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--encre);
+    margin-bottom: 1.4rem;
+}
+
+.connexion-marque small {
+    display: block;
+    font-family: "Inter", sans-serif;
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--or);
+}
+
+main.connexion h1 {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+}
+
+/* Utilisateur connecté, en bas de la barre latérale. */
+.barre-utilisateur {
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.8rem;
+    color: #9aa3b5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.barre-utilisateur strong {
+    color: #fff;
+    font-weight: 500;
+}
+
+.barre-utilisateur button {
+    background: none;
+    border: none;
+    color: #c9cfdc;
+    font-size: 0.8rem;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.barre-utilisateur button:hover {
+    color: #fff;
+}
+
+/* ---------- Petits écrans : la barre devient un en-tête repliable ---------- */
+
+@media (max-width: 991.98px) {
+    .barre {
+        position: static;
+        width: auto;
+        padding: 0.9rem 1rem;
+    }
+
+    .barre-tete {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .barre-bascule {
+        display: inline-flex;
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-radius: 8px;
+        padding: 0.3rem 0.65rem;
+        font-size: 0.85rem;
+    }
+
+    .barre-contenu:not(.show) {
+        display: none;
+    }
+
+    main.container {
+        margin: 1rem !important;
+        width: auto;
+        padding: 1.5rem 1.1rem;
+        border-radius: 12px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .table-responsive-auto,
+    main > table.table {
+        display: block;
+        overflow-x: auto;
+    }
+}

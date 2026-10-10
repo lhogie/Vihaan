@@ -7,7 +7,7 @@ Application de gestion des ressources humaines d'un laboratoire de recherche : p
 - **Spring Boot 4.1** (Java 21), **Spring Data JPA** (Hibernate), **MariaDB**
 - **Thymeleaf** pour une interface web rendue côté serveur (pas de SPA séparée)
 - **Maven** comme outil de build
-- Pas d'authentification en v1
+- Connexion obligatoire, deux rôles : LECTEUR (consultation) et GESTIONNAIRE (modifications, exports, restauration). Comptes de développement : `lecteur`/`lecteur` et `gestionnaire`/`gestionnaire` (à remplacer avant toute mise à disposition, voir `application.yml`).
 
 ## Modèle de données
 
@@ -80,7 +80,7 @@ L'application a été testée de bout en bout (MariaDB isolée temporaire, car D
 
 ## Limites connues / pistes pour la suite
 
-- Pas d'authentification (voulu pour la v1).
+- Comptes locaux déclarés dans `application.yml` ; à remplacer par le SSO de l'établissement avant un déploiement.
 - `ddl-auto: update` (pas de migrations Flyway) — à revoir si l'app évolue vers de la production.
 - Les grades disponibles par employeur ne sont pas appliqués comme contrainte stricte sur le formulaire `Poste` (tous les grades sont proposés) — cohérent avec l'objectif "minimaliste" du cahier des charges, mais pourrait être filtré en JS si besoin.
 - La recherche globale ne porte que sur les champs texte directs de chaque entité, pas sur les champs des entités liées (ex. chercher une personne par le nom de sa structure ne la fera pas remonter directement, mais la structure elle-même apparaîtra dans les résultats).

@@ -6,17 +6,20 @@
 <main class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Bâtiments</h1>
-        <a class="btn btn-primary" th:href="@{/batiments/new}">Ajouter</a>
+        <div class="d-flex gap-2" th:if="${peutModifier}">
+            <a class="btn btn-secondary" th:href="@{/export/json/batiments}" title="Télécharger les batiments au format JSON">Export JSON</a>
+            <a class="btn btn-primary" th:href="@{/batiments/new}">Ajouter</a>
+        </div>
     </div>
     <table class="table table-striped">
-        <thead><tr><th>Nom</th><th>Campus</th><th></th></tr></thead>
+        <thead><tr><th>Nom</th><th>Campus</th><th th:if="${peutModifier}"></th></tr></thead>
         <tbody>
         <tr th:each="item : ${items}">
             <td><a th:href="@{'/batiments/' + ${item.id}}" th:text="${item.nom}"></a></td>
             <td>
                 <a th:if="${item.campus} != null" th:href="@{'/campus/' + ${item.campus.id}}" th:text="${item.campus.nom}"></a>
             </td>
-            <td class="text-end">
+            <td class="text-end" th:if="${peutModifier}">
                 <a class="btn btn-sm btn-secondary" th:href="@{'/batiments/' + ${item.id} + '/edit'}">Modifier</a>
                 <form class="d-inline" th:action="@{'/batiments/' + ${item.id} + '/delete'}" method="post"
                       onsubmit="return confirm('Supprimer ce bâtiment ?');">

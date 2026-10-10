@@ -15,6 +15,24 @@ spring:
         format_sql: false
   thymeleaf:
     cache: false
+  servlet:
+    multipart:
+      # Les exports JSON complets servent de sauvegarde et peuvent dépasser la limite par défaut (1 Mo).
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 server:
   port: 8080
+
+# Comptes locaux (en attendant le SSO de l'établissement).
+# Mots de passe de DÉVELOPPEMENT, en clair ({noop}) : un avertissement est journalisé au démarrage.
+# Avant toute mise à disposition, les remplacer par des hash bcrypt, par exemple via des variables
+# d'environnement : SECURITE_UTILISATEURS_0_MOTDEPASSE='{bcrypt}$2a$10$...'
+securite:
+  utilisateurs:
+    - identifiant: gestionnaire
+      mot-de-passe: "{noop}gestionnaire"
+      role: GESTIONNAIRE
+    - identifiant: lecteur
+      mot-de-passe: "{noop}lecteur"
+      role: LECTEUR
