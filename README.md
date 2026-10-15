@@ -69,7 +69,7 @@ Au premier démarrage, `DataSeeder` remplit automatiquement les tables `pays` (l
 
 ## Déploiement
 
-Serveur : `admin.i3s.unice.fr` (Debian 13), joignable seulement depuis le réseau du laboratoire (ssh via le rebond `bastion.i3s`) ; l'application y est en service à l'adresse http://admin.i3s.unice.fr/. Pas de Docker en production : le jar tourne comme service systemd (utilisateur système `hr`), derrière nginx qui porte le HTTPS ; MariaDB est celle de Debian. Les fichiers sont dans `deploy/` :
+Serveur : `admin.i3s.unice.fr` (Debian 13), joignable seulement depuis le réseau du laboratoire (ssh via le rebond `bastion.i3s`) ; l'application y est en service à l'adresse http://admin.i3s.unice.fr/. Le jar tourne comme service systemd (utilisateur système `hr`), derrière nginx qui porte le HTTPS ; MariaDB est celle de Debian. Les fichiers sont dans `deploy/` :
 
 | Fichier | Installé en | Rôle |
 |---|---|---|
@@ -93,7 +93,7 @@ HTTPS : le serveur n'étant pas joignable depuis Internet, `certbot --nginx` (d�
 
 `deployer.sh` utilise `sudo` sur le serveur : il faut le mot de passe sudo du compte qui déploie (ou passer par `su`).
 
-Sans VPN, deux façons d'utiliser l'application depuis une session ssh : `w3m http://localhost/` sur le serveur (navigateur en mode texte : Tab pour aller au champ suivant, Entrée pour le remplir ou suivre un lien, `q` pour quitter), ou un tunnel `ssh -L 8080:localhost:80 admin.i3s` puis http://localhost:8080 dans le navigateur du poste. Pour le tunnel, nginx rend les redirections relatives (`proxy_redirect`, `absolute_redirect off`) : sinon elles renverraient vers le port 80 du poste.
+Sans VPN, l'application s'utilise depuis une session ssh sur le serveur : `w3m http://localhost/` (navigateur en mode texte : Tab pour aller au champ suivant, Entrée pour le remplir ou suivre un lien, `q` pour quitter).
 
 Mise à jour : `deploy/deployer.sh` (le jar précédent reste en `/opt/hr/hr.jar.precedent`). Journaux : `sudo journalctl -u hr -f`. Pour reprendre les données de développement : export JSON complet en local, puis « Restaurer » en production.
 

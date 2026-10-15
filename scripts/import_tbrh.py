@@ -3,7 +3,7 @@
 
 Usage : python3 scripts/import_tbrh.py <dossier_csv> [--dry-run]
 
-En production (admin.i3s, MariaDB sans Docker), en root pour l'accès à la base :
+En production (admin.i3s, MariaDB locale), en root pour l'accès à la base :
   su -c 'python3 scripts/import_tbrh.py <dossier_csv>'
 
 Crée les personnes, leurs postes (employeur + grade + dates), leurs
