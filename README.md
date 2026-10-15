@@ -53,7 +53,6 @@ src/main/java/fr/lab/hr/
 src/main/resources/
   templates/    3 pages Thymeleaf par entité (list/form/show) + layout/fragments.html (navbar commune) + search/results.html
   application.yml
-docker-compose.yml   MariaDB locale pour le développement
 ```
 
 Chaque entité suit le même schéma : un formulaire avec des `<select>` (simples ou multiples) pour les relations vers des entités existantes, une page de liste avec ajout/suppression, une page de détail qui liste les entités liées avec des liens cliquables dans les deux sens.
@@ -61,8 +60,9 @@ Chaque entité suit le même schéma : un formulaire avec des `<select>` (simple
 ## Lancer le projet
 
 ```bash
-docker compose up -d        # démarre une MariaDB locale (base "hr", utilisateur "hr"/"hr")
-mvn spring-boot:run          # démarre l'application sur http://localhost:8080
+brew install mariadb && brew services start mariadb   # MariaDB du poste, une fois
+sudo mariadb < scripts/creer_base_dev.sql               # base "hr", utilisateur "hr"/"hr", une fois
+mvn spring-boot:run                                     # application sur http://localhost:8080
 ```
 
 Au premier démarrage, `DataSeeder` remplit automatiquement les tables `pays` (liste ISO complète, via `Locale.getISOCountries()`) et `grade` (IE/IR/AI/DR/CR/MCF/PR). Ne fait rien aux démarrages suivants si les tables ne sont pas vides.
@@ -99,7 +99,7 @@ Mise à jour : `deploy/deployer.sh` (le jar précédent reste en `/opt/hr/hr.jar
 
 ## Vérifications effectuées
 
-L'application a été testée de bout en bout (MariaDB isolée temporaire, car Docker Desktop n'était pas lancé sur la machine) :
+L'application a été testée de bout en bout (sur une MariaDB isolée temporaire) :
 
 - Les 12 pages de liste, les 12 formulaires de création et plusieurs pages de détail répondent 200.
 - Création en chaîne : Campus → Bâtiment → Bureau → Structure → Employeur (avec grades) → Personne → Poste/Contrat/Publication, avec vérification en base que les tables de jointure many-to-many sont bien peuplées.

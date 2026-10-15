@@ -38,9 +38,11 @@ Ne pas écrire de requête de recherche par entité. `GenericSearch.containing(C
 ## Lancer / vérifier
 
 ```bash
-docker compose up -d
+brew services start mariadb   # MariaDB du poste (Homebrew) ; base créée par scripts/creer_base_dev.sql
 mvn spring-boot:run
 ```
+
+Pas de Docker, ni en développement ni en production.
 
 Avant de considérer une modification UI terminée, vérifier au minimum :
 1. `mvn compile` passe.

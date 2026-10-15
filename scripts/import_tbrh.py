@@ -14,16 +14,15 @@ réutilisés. Refuse de tourner si la table personne n'est pas vide, pour ne pas
 créer de doublons.
 
 Le SQL est exécuté dans une seule transaction, par la commande donnée dans la
-variable d'environnement HR_MARIADB ; par défaut, le conteneur MariaDB de
-docker-compose.yml si Docker est installé (lancer alors le script depuis la racine
-du dépôt), sinon la MariaDB locale (« mariadb hr », accès root par socket unix).
+variable d'environnement HR_MARIADB ; par défaut, la MariaDB locale : en root
+« mariadb hr » (accès par socket unix, cas du serveur), sinon avec le compte de
+développement hr/hr.
 """
 
 import csv
 import os
 import re
 import shlex
-import shutil
 import subprocess
 import sys
 import unicodedata
@@ -31,7 +30,7 @@ from datetime import date
 from pathlib import Path
 
 DB_CMD = shlex.split(os.environ.get("HR_MARIADB") or (
-    "docker compose exec -T db mariadb -uhr -phr hr" if shutil.which("docker") else "mariadb hr"))
+    "mariadb hr" if os.geteuid() == 0 else "mariadb -uhr -phr hr"))
 
 # Catégorie de chaque fichier : grade utilisé quand le fichier ne donne pas de corps/grade,
 # et employeur par défaut quand aucune colonne d'organisme n'est remplie.

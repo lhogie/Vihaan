@@ -83,7 +83,7 @@ Spring Data JPA / Hibernate & Mapping objet-relationnel, repositories,
   \code{Specification} pour la recherche \\
 Thymeleaf & Rendu HTML côté serveur \\
 Jakarta Bean Validation & Contraintes déclaratives (\code{@NotBlank}) \\
-MariaDB 11 & Base de données, lancée en local via \code{docker compose} \\
+MariaDB 11 & Base de données, installée sur le poste (Homebrew) \\
 Maven & Build (wrapper \code{mvnw} fourni) \\
 \bottomrule
 \end{tabularx}
@@ -146,7 +146,6 @@ src/main/java/fr/lab/hr/
 src/main/resources/
   application.yml      connexion MariaDB, options JPA et Thymeleaf
   templates/           list/form/show par entité, layout/, search/
-docker-compose.yml     MariaDB locale pour le développement
 \end{lstlisting}
 
 Toutes les entités implémentent \code{Identifiable} (une seule méthode
@@ -391,9 +390,9 @@ structure fera remonter la structure, pas les personnes qui y sont rattachées.
   \item \textbf{Schéma.} \code{spring.jpa.hibernate.ddl-auto: update} :
     Hibernate crée et fait évoluer le schéma au démarrage. Il n'y a pas de
     migrations Flyway/Liquibase.
-  \item \textbf{Base locale.} \code{docker-compose.yml} lance
-    \code{mariadb:11} sur le port 3306, base \code{hr}, utilisateur
-    \code{hr}/\code{hr}, avec un volume nommé \code{db\_data}.
+  \item \textbf{Base locale.} MariaDB installée sur le poste (Homebrew),
+    port 3306, base \code{hr}, utilisateur \code{hr}/\code{hr}, créés par
+    \code{scripts/creer\_base\_dev.sql}.
   \item \textbf{Données de référence.} \code{DataSeeder}
     (\code{ApplicationRunner}) remplit \code{pays} à partir de
     \code{Locale.getISOCountries()} (noms en français) et \code{grade} avec
@@ -404,7 +403,7 @@ structure fera remonter la structure, pas les personnes qui y sont rattachées.
 \end{itemize}
 
 \begin{lstlisting}
-docker compose up -d     # MariaDB locale
+brew services start mariadb   # MariaDB locale
 mvn spring-boot:run      # application sur http://localhost:8080
 \end{lstlisting}
 

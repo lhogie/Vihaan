@@ -230,7 +230,7 @@ Import ponctuel, en ligne de commande, des exports CSV du tableau de bord RH de 
 | Id | Exigence |
 |---|---|
 | TEC-01 | Java 21, Spring Boot 4.1, Spring Data JPA (Hibernate 7), Thymeleaf, Bootstrap 5, MariaDB 11. |
-| TEC-02 | La base de développement se lance avec `docker compose up -d` (base `hr`, utilisateur `hr`/`hr`, port 3306), l'application avec `mvn spring-boot:run` (port 8080). |
+| TEC-02 | La base de développement est une MariaDB installée sur le poste (Homebrew), base `hr`, utilisateur `hr`/`hr`, port 3306, créée par `scripts/creer_base_dev.sql`, l'application avec `mvn spring-boot:run` (port 8080). |
 | TEC-03 | Le schéma de la base est créé et mis à jour automatiquement par Hibernate au démarrage. |
 | TEC-04 | Les relations sont envoyées par les formulaires sous forme d'identifiants (`xxxId`, `xxxIds`) et résolues explicitement par chaque contrôleur. |
 | TEC-05 | Aucune collection non renvoyée par un formulaire ne doit être en cascade avec suppression des orphelins, sous peine d'effacer des données à chaque enregistrement (voir `CLAUDE.md`). |
