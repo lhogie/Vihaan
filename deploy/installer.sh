@@ -11,7 +11,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 cd "$(dirname "$0")"
 
 apt-get update
-apt-get install -y openjdk-21-jre-headless mariadb-server nginx certbot python3-certbot-nginx apache2-utils
+apt-get install -y openjdk-21-jre-headless mariadb-server nginx certbot python3-certbot-nginx apache2-utils w3m
 
 id hr &>/dev/null || useradd --system --home-dir /opt/hr --shell /usr/sbin/nologin hr
 install -d -o hr -g hr -m 750 /opt/hr

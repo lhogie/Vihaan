@@ -93,6 +93,8 @@ HTTPS : le serveur n'étant pas joignable depuis Internet, `certbot --nginx` (d�
 
 `deployer.sh` utilise `sudo` sur le serveur : il faut le mot de passe sudo du compte qui déploie (ou passer par `su`).
 
+Sans VPN, deux façons d'utiliser l'application depuis une session ssh : `w3m http://localhost/` sur le serveur (navigateur en mode texte : Tab pour aller au champ suivant, Entrée pour le remplir ou suivre un lien, `q` pour quitter), ou un tunnel `ssh -L 8080:localhost:80 admin.i3s` puis http://localhost:8080 dans le navigateur du poste. Pour le tunnel, nginx rend les redirections relatives (`proxy_redirect`, `absolute_redirect off`) : sinon elles renverraient vers le port 80 du poste.
+
 Mise à jour : `deploy/deployer.sh` (le jar précédent reste en `/opt/hr/hr.jar.precedent`). Journaux : `sudo journalctl -u hr -f`. Pour reprendre les données de développement : export JSON complet en local, puis « Restaurer » en production.
 
 ## Vérifications effectuées

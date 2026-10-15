@@ -19,6 +19,7 @@ cat <<EOF
   │ Service hr : ${etat:-inconnu} · $jar
   │ Dernière sauvegarde : ${sauvegarde:-aucune}   (/var/backups/hr)
   │
+  │ Sans VPN      w3m http://localhost/         (navigateur en terminal ; q pour quitter)
   │ Journal       journalctl -u hr -f
   │ Redémarrer    systemctl restart hr          (root)
   │ Application   /opt/hr/hr.jar   · config /etc/hr/application.yml (secrets)

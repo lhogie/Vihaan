@@ -16,6 +16,10 @@ server:
   port: 8080
   # nginx transmet X-Forwarded-Proto : redirections en https et cookie de session « Secure ».
   forward-headers-strategy: native
+  tomcat:
+    # Redirections relatives (Location: /login) : l'application reste utilisable à travers
+    # un tunnel ssh (http://localhost:8080), dont le port est inconnu du serveur.
+    use-relative-redirects: true
 
 securite:
   utilisateurs:
