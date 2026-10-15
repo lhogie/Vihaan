@@ -1,0 +1,21 @@
+[Unit]
+Description=Gestion RH du laboratoire
+After=network.target mariadb.service
+Requires=mariadb.service
+
+[Service]
+User=hr
+Group=hr
+WorkingDirectory=/opt/hr
+ExecStart=/usr/bin/java -Xmx768m -jar /opt/hr/hr.jar --spring.config.additional-location=file:/etc/hr/
+# Code de sortie de la JVM arrêtée par SIGTERM (systemctl stop) : arrêt normal.
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

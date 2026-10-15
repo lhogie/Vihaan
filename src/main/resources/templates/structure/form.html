@@ -13,6 +13,10 @@
             <input class="form-control" th:field="*{nom}">
         </div>
         <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" th:field="*{description}" rows="4"></textarea>
+        </div>
+        <div class="mb-3">
             <label class="form-label">Structure parente</label>
             <select class="form-select" name="structureParenteId">
                 <option value="">-- aucune --</option>

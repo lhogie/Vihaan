@@ -42,7 +42,7 @@ Les champs marqués **\*** sont obligatoires.
 | Entité | Champs |
 |---|---|
 | **Personne** | nom\*, prénom\*, prénom d'usage, nom de jeune fille, genre (M, F, AUTRE), numéro de badge, ville et date de naissance, date de doctorat, HDR (oui/non), associé (oui/non), collaborateur (oui/non), quotité de travail (%), section CNRS, ORCID, identifiant HAL, listes de téléphones, d'e-mails et de pages web |
-| **Structure** | nom\*, structure parente (hiérarchie libre : laboratoire › pôle › équipe…) |
+| **Structure** | nom\*, description (texte libre, plusieurs lignes), structure parente (hiérarchie libre : laboratoire › pôle › équipe…) |
 | **Contrat** | nom\* |
 | **Employeur** | nom\*, public (oui/non), grades proposés |
 | **Grade** | code\*, libellé\* |

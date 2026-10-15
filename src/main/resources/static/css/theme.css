@@ -663,3 +663,9 @@ main.connexion h1 {
         overflow-x: auto;
     }
 }
+
+/* Texte libre saisi dans un textarea : garder les retours à la ligne. */
+.description {
+    white-space: pre-line;
+    max-width: 70ch;
+}

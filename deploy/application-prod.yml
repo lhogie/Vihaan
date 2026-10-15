@@ -1,0 +1,27 @@
+# Configuration de production, installée en /etc/hr/application.yml par installer.sh.
+# Elle complète celle du jar et la remplace pour les clés présentes ici
+# (la liste securite.utilisateurs remplace en bloc les comptes de développement).
+# Les @...@ sont remplacés par installer.sh : ne pas commiter le fichier rempli.
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/hr
+    username: hr
+    password: "@MDP_BASE@"
+  thymeleaf:
+    cache: true
+
+server:
+  # Seul nginx est exposé ; l'application n'écoute qu'en local.
+  address: 127.0.0.1
+  port: 8080
+  # nginx transmet X-Forwarded-Proto : redirections en https et cookie de session « Secure ».
+  forward-headers-strategy: native
+
+securite:
+  utilisateurs:
+    - identifiant: gestionnaire
+      mot-de-passe: "{bcrypt}@HASH_GESTIONNAIRE@"
+      role: GESTIONNAIRE
+    - identifiant: lecteur
+      mot-de-passe: "{bcrypt}@HASH_LECTEUR@"
+      role: LECTEUR

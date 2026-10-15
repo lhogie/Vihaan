@@ -1,0 +1,29 @@
+#!/bin/sh
+# Message affiché à la connexion ssh : état de l'application RH et commandes utiles.
+# Installé en /etc/update-motd.d/50-hr par installer.sh ; exécuté en root par pam_motd
+# à chaque connexion, donc rapide : pas de journalctl ni d'accès à la base.
+
+etat=$(systemctl is-active hr 2>/dev/null)
+if [ -f /opt/hr/hr.jar ]; then
+    jar="jar du $(date -r /opt/hr/hr.jar '+%d/%m/%Y à %H:%M')"
+else
+    jar="aucun jar installé"
+fi
+sauvegarde=$(ls -1t /var/backups/hr/hr-*.sql.gz 2>/dev/null | head -1)
+sauvegarde=${sauvegarde:+$(basename "$sauvegarde")}
+
+cat <<EOF
+
+  ┌─ Gestion RH du laboratoire ─────────────────────────────────────────
+  │ http://admin.i3s.unice.fr/   (réseau du laboratoire seulement, pas de HTTPS)
+  │ Service hr : ${etat:-inconnu} · $jar
+  │ Dernière sauvegarde : ${sauvegarde:-aucune}   (/var/backups/hr)
+  │
+  │ Journal       journalctl -u hr -f
+  │ Redémarrer    systemctl restart hr          (root)
+  │ Application   /opt/hr/hr.jar   · config /etc/hr/application.yml (secrets)
+  │ Code source   git@github.com:lhogie/Vihaan.git
+  │               README.md (« Déploiement ») et CLAUDE.md (« Production »)
+  └─────────────────────────────────────────────────────────────────────
+
+EOF

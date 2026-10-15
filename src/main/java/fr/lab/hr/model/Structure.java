@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +24,10 @@ public class Structure implements Identifiable {
 
     @NotBlank
     private String nom;
+
+    /** Texte libre : thématiques, missions... TEXT plutôt que VARCHAR(255). */
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
     @ManyToOne
     private Structure structureParente;
@@ -54,6 +59,14 @@ public class Structure implements Identifiable {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Structure getStructureParente() {

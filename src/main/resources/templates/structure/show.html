@@ -6,6 +6,8 @@
 <main class="container my-4">
     <a class="type-entite" th:href="@{/structures}" title="Voir la liste">Structure</a>
     <h1 th:text="${structure.nom}"></h1>
+    <p class="description" th:if="${!#strings.isEmpty(structure.description)}"
+       th:text="${structure.description}"></p>
     <dl class="row">
         <dt class="col-sm-3">Structure parente</dt>
         <dd class="col-sm-9">

@@ -67,6 +67,34 @@ mvn spring-boot:run          # démarre l'application sur http://localhost:8080
 
 Au premier démarrage, `DataSeeder` remplit automatiquement les tables `pays` (liste ISO complète, via `Locale.getISOCountries()`) et `grade` (IE/IR/AI/DR/CR/MCF/PR). Ne fait rien aux démarrages suivants si les tables ne sont pas vides.
 
+## Déploiement
+
+Serveur : `admin.i3s.unice.fr` (Debian 13), joignable seulement depuis le réseau du laboratoire (ssh via le rebond `bastion.i3s`) ; l'application y est en service à l'adresse http://admin.i3s.unice.fr/. Pas de Docker en production : le jar tourne comme service systemd (utilisateur système `hr`), derrière nginx qui porte le HTTPS ; MariaDB est celle de Debian. Les fichiers sont dans `deploy/` :
+
+| Fichier | Installé en | Rôle |
+|---|---|---|
+| `installer.sh` | — | installation initiale, en root : paquets, utilisateur `hr`, base, service, site nginx, sauvegarde |
+| `application-prod.yml` | `/etc/hr/application.yml` (640, root:hr) | mot de passe de la base (aléatoire) et hash bcrypt des comptes, demandés à l'installation |
+| `hr.service` | `/etc/systemd/system/` | lance `/opt/hr/hr.jar` avec la configuration ci-dessus |
+| `nginx-hr.conf` | `/etc/nginx/sites-available/hr` | proxy vers `127.0.0.1:8080`, envois jusqu'à 50 Mo |
+| `hr-sauvegarde` | `/etc/cron.daily/` | dump quotidien dans `/var/backups/hr`, 30 jours gardés |
+| `hr-motd` | `/etc/update-motd.d/50-hr` | message affiché à la connexion ssh : état du service, date du jar, dernière sauvegarde, commandes utiles |
+| `deployer.sh` | — | depuis le poste de développement : construit le jar, le copie, redémarre le service |
+
+Première installation :
+
+```bash
+scp -r deploy admin.i3s:/tmp/hr-deploy
+ssh -t admin.i3s sudo bash /tmp/hr-deploy/installer.sh   # demande les mots de passe des comptes
+deploy/deployer.sh                                        # premier jar
+```
+
+HTTPS : le serveur n'étant pas joignable depuis Internet, `certbot --nginx` (défi HTTP de Let's Encrypt) ne fonctionne pas. Il faut un certificat fourni par la DSI (ou un défi DNS), à déclarer dans `nginx-hr.conf` (`listen 443 ssl`, `ssl_certificate`, `ssl_certificate_key`) avec une redirection du port 80. En attendant, le trafic, mots de passe compris, circule en clair sur le réseau du laboratoire.
+
+`deployer.sh` utilise `sudo` sur le serveur : il faut le mot de passe sudo du compte qui déploie (ou passer par `su`).
+
+Mise à jour : `deploy/deployer.sh` (le jar précédent reste en `/opt/hr/hr.jar.precedent`). Journaux : `sudo journalctl -u hr -f`. Pour reprendre les données de développement : export JSON complet en local, puis « Restaurer » en production.
+
 ## Vérifications effectuées
 
 L'application a été testée de bout en bout (MariaDB isolée temporaire, car Docker Desktop n'était pas lancé sur la machine) :
