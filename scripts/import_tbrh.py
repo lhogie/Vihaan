@@ -3,6 +3,9 @@
 
 Usage : python3 scripts/import_tbrh.py <dossier_csv> [--dry-run]
 
+En production (admin.i3s, MariaDB sans Docker), en root pour l'accès à la base :
+  su -c 'HR_MARIADB="mariadb hr" python3 scripts/import_tbrh.py <dossier_csv>'
+
 Crée les personnes, leurs postes (employeur + grade + dates), leurs
 structures (pôle sous I3S, équipe sous pôle) et leurs bureaux (bâtiment =
 site de recherche). Les structures, employeurs, grades, bâtiments et bureaux
@@ -10,19 +13,22 @@ déjà présents en base (même nom, sans tenir compte de la casse) sont
 réutilisés. Refuse de tourner si la table personne n'est pas vide, pour ne pas
 créer de doublons.
 
-Le SQL est exécuté dans une seule transaction via le conteneur MariaDB de
-docker-compose.yml.
+Le SQL est exécuté dans une seule transaction, par la commande donnée dans la
+variable d'environnement HR_MARIADB ; par défaut, le conteneur MariaDB de
+docker-compose.yml (lancer alors le script depuis la racine du dépôt).
 """
 
 import csv
+import os
 import re
+import shlex
 import subprocess
 import sys
 import unicodedata
 from datetime import date
 from pathlib import Path
 
-DB_CMD = ["docker", "compose", "exec", "-T", "db", "mariadb", "-uhr", "-phr", "hr"]
+DB_CMD = shlex.split(os.environ.get("HR_MARIADB", "docker compose exec -T db mariadb -uhr -phr hr"))
 
 # Catégorie de chaque fichier : grade utilisé quand le fichier ne donne pas de corps/grade,
 # et employeur par défaut quand aucune colonne d'organisme n'est remplie.
